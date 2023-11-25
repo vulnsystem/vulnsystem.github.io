@@ -6,7 +6,10 @@ on:
     paths: [packages/**]
   pull_request:
     branches: [main]
-    paths: [packages/**]
+    paths: 
+      - packages/**
+      - website/**
+      - '!website/docs/**'
 
 jobs:
   deploy:
