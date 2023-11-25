@@ -120,11 +120,11 @@ export default async function createConfigAsync() {
   return {
     title: 'Docusaurus',
     tagline: getLocalizedConfigValue('tagline'),
-    organizationName: 'facebook',
-    projectName: 'docusaurus',
+    organizationName: 'vulnsystem',
+    projectName: 'vulnsystem.github.io',
     baseUrl,
     baseUrlIssueBanner: true,
-    url: 'https://docusaurus.io',
+    url: 'https://vulnsystem.github.io',
     // Dogfood both settings:
     // - force trailing slashes for deploy previews
     // - avoid trailing slashes in prod
@@ -146,7 +146,7 @@ export default async function createConfigAsync() {
           ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
             [defaultLocale, 'ja']
           : // Production locales
-            [defaultLocale, 'fr', 'pt-BR', 'ko', 'zh-CN'],
+            [defaultLocale, 'fr', 'zh-CN'],
     },
     webpack: {
       jsLoader: (isServer) => ({
