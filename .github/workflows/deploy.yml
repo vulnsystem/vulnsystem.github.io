@@ -3,13 +3,13 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: [packages/**]
+    paths: 
+      - website/**
+
   pull_request:
     branches: [main]
     paths: 
-      - packages/**
       - website/**
-      - '!website/docs/**'
 
 jobs:
   deploy:
