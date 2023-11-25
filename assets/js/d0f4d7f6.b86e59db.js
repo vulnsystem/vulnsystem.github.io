@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[8618],{1373:e=>{e.exports=JSON.parse('{"permalink":"/blog-only/tags/adoption","page":1,"postsPerPage":3,"totalPages":1,"totalCount":2,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);

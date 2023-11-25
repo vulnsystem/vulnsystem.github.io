@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[7888],{6124:e=>{e.exports=JSON.parse('{"label":"birth","permalink":"/blog-only/tags/birth","allTagsPath":"/blog-only/tags","count":1,"unlisted":false}')}}]);
