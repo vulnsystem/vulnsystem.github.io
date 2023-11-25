@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[66610],{38770:t=>{t.exports=JSON.parse('{"title":"Getting Started","slug":"/category/getting-started","permalink":"/fr/docs/category/getting-started","navigation":{"previous":{"title":"Introduction","permalink":"/fr/docs/"},"next":{"title":"Installation","permalink":"/fr/docs/installation"}}}')}}]);
