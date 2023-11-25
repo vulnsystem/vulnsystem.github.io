@@ -1,0 +1,84 @@
+---
+description: How to get started Docus quickly.
+---
+
+# QuickStart
+
+Docusaurus is most quick, easy, and effect way to build an knowledge sharing website. [packages](https://github.com/facebook/docusaurus/).
+
+:::tip
+
+We do not creat an new empty Docus website and build up step by step.
+It is hard from 0 to 1, but easy from 1 to N.
+So we fork a mature website like docusaurus.io as initial status.
+
+:::
+
+## Fork the Docusaurs repository 
+The docusaurus.io is one of repositories in Facebook, So the [repository](https://github.com/facebook/docusaurus) can be forked to your orgniaztion.
+After the repository forked, 
+
+## Rename the Repository on Github
+The name of the repository should adapte to ** vulnsystem.github.io ** in the settings page. vulnsystem is your orgniaztion name.
+Change the branch in the settings > pages to ** main with docs dir **. To open the vulnsystem.github.io in broswer, the readme will be loaded.
+
+## Adapt the page branch of website
+To open the cloned repository in broswer, change the branch in the settings > pages to ** gh-pages with root dir **.
+If there is no gh-pages branch in the repository, create the new branch manully.
+
+## To Deploy Automatically
+We will use a popular third-party deployment action: [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus).
+
+Add this workflow file in .github/workflows/ derictory:
+
+```yml title=".github/workflows/deploy.yml"
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: 
+      - website/**
+
+  pull_request:
+    branches: [main]
+    paths: 
+      - packages/**
+      - website/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Node
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: '18'
+          cache: yarn
+      - name: Installation
+        run: yarn
+      - name: Build blog-only
+        working-directory: website
+        run: |
+          yarn workspace website build
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Build output to publish to the `gh-pages` branch:
+          publish_dir: ./website/build
+          # Assign commit authorship to the official GH-Actions bot for deploys to `gh-pages` branch:
+          # https://github.com/actions/checkout/issues/13#issuecomment-724415212
+          # The GH actions bot is used by default if you didn't specify the two fields.
+          # You can swap them out with your own user credentials.
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+```
+
