@@ -9,6 +9,7 @@ on:
   pull_request:
     branches: [main]
     paths: 
+      - packages/**
       - website/**
 
 concurrency:
@@ -16,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
@@ -31,9 +32,8 @@ jobs:
         run: yarn
       - name: Build blog-only
         working-directory: website
-        run: yarn workspace website build:blogOnly
-      # Popular action to deploy to GitHub Pages:
-      # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
+        run: |
+          yarn workspace website build:blogOnly
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         with:
