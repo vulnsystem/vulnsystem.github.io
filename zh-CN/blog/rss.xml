@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
-        <title>Docusaurus Blog</title>
+        <title>WoofWoof Blog</title>
         <link>https://vulnsystem.github.io/zh-CN/blog</link>
-        <description>Docusaurus Blog</description>
+        <description>WoofWoof Blog</description>
         <lastBuildDate>Tue, 31 Oct 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>

@@ -2,7 +2,7 @@
     "version": "https://jsonfeed.org/version/1",
     "title": "Docusaurus Tests Blog",
     "home_page_url": "https://vulnsystem.github.io/zh-CN/tests/blog",
-    "description": "Docusaurus Blog",
+    "description": "WoofWoof Blog",
     "items": [
         {
             "id": "https://vulnsystem.github.io/zh-CN/tests/blog/2023/08/05/",
