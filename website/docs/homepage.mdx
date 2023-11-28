@@ -7,6 +7,49 @@ description: How to adapt home page quickly.
 How to configure the home page which loaded when `https://vulnsystem.github.io/` open?
 There are navbar, TopBanner, HeroBanner, and FeaturesContainer from top to the bottom in the home page.
 
+## NavBar
+The **navBar** is in the top of home page. You can adapt the navbar content according to the following code in the [website/docusaurus.config.ts](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/docusaurus.config.ts)
+```js title="NavBar"
+      navbar: {
+        hideOnScroll: true,
+        // highlight-next-line
+        title: 'WoofWoof',
+        logo: {
+          alt: '',
+          src: 'img/docusaurus.svg',
+          srcDark: 'img/docusaurus_keytar.svg',
+          width: 32,
+          height: 32,
+        },
+        items: [
+          {
+            type: 'doc',
+            position: 'left',
+            docId: 'quickstart',
+            // highlight-next-line
+            label: 'Docus',
+          },
+          {
+            type: 'docSidebar',
+            position: 'left',
+            sidebarId: 'api',
+            // highlight-next-line
+            label: 'API',
+          },
+          {to: 'blog', label: 'Blog', position: 'left'},
+          {to: 'showcase', label: 'Showcase', position: 'left'},
+          {
+            to: '/community/support',
+            // highlight-next-line
+            label: 'Community',
+            position: 'left',
+            activeBaseRegex: `/community/`,
+          },
+          // highlight-next-line
+          ......
+        ]
+```
+
 ## TopBanner
 The **TopBanner** is next to the **navbar** and **HeroBanner** next to the TopBanner. You can adapt the TopBanner and HeroBanner content in the home page according to the following code in the [website/src/pages/index.tsx](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/src/pages/index.tsx).
 
