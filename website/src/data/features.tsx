@@ -68,10 +68,9 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.ready-for-translations.text">
-        Utilize the secp256k1 elliptic curve to generate key pairs for each participant in the system, 
-        Use a key derivation function (KDF) to derive a symmetric key from the shared secret obtained 
-        through the ECDH key exchange. Choose a strong symmetric-key encryption algorithm 
-        and use the derived symmetric key to encrypt the actual messages.
+        Obtain one shared secret through the ECDH key exchange by crypto's key. 
+        Use a key derivation function (KDF) to derive a symmetric key from the shared secret. 
+        Choose a symmetric encryption algorithm with the derived key to encrypt messages.
       </Translate>
     ),
   },
@@ -105,8 +104,9 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.content-search.text">
-        Make it easy for your community to find what they need in your
-        documentation. We proudly support Algolia documentation search.
+        No licensing to prevent users from using the software for various purposes. 
+        Encourage collaboration not only to develop software, 
+        but also to build anonymous, end-to-end cryptography, and privacy protection environment.
       </Translate>
     ),
   },
