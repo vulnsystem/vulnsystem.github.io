@@ -32,7 +32,7 @@ const FEATURES: FeatureItem[] = [
     text: (
       <Translate id="homepage.features.powered-by-mdx.text">
         Apache Kafka is an open-source distributed event streaming platform 
-        used for high-performance data pipelines, streaming analytics, \
+        used for high-performance data pipelines, streaming analytics, 
         data integration, and mission-critical applications.
       </Translate>
     ),
@@ -58,7 +58,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: translate({
-      message: 'Ready for Translations',
+      message: 'End-to-end cryptography',
       id: 'homepage.features.ready-for-translations.title',
     }),
     image: {
@@ -68,8 +68,10 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.ready-for-translations.text">
-        Localization comes out-of-the-box. Use git, Crowdin, or any other
-        translation manager to translate your docs and deploy them individually.
+        Utilize the secp256k1 elliptic curve to generate key pairs for each participant in the system, 
+        Use a key derivation function (KDF) to derive a symmetric key from the shared secret obtained 
+        through the ECDH key exchange. Choose a strong symmetric-key encryption algorithm 
+        and use the derived symmetric key to encrypt the actual messages.
       </Translate>
     ),
   },
