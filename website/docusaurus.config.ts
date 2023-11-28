@@ -559,10 +559,6 @@ export default async function createConfigAsync() {
                 value: '<hr class="dropdown-separator">',
               },
               {
-                type: 'html',
-                value: '<hr class="dropdown-separator">',
-              },
-              {
                 to: '/versions',
                 label: 'All versions',
               },
