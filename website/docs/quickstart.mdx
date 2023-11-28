@@ -157,3 +157,31 @@ In **website/docusaurus.config.ts** file, please adpate the **docId** to make wh
 
 🎯 The label in the items have been adapted from **Doc** to **Dous**, so when home page loaded the navbar info changed to Docus.
 :::
+
+## Tagging a new version {#tagging-a-new-version}
+
+1. First, make sure the current docs version (the `./docs` directory) is ready to be frozen.
+2. Enter a new version number.
+
+```bash yarn
+yarn docusaurus docs:version 3.0.1
+```
+
+When tagging a new version, the document versioning mechanism will:
+
+- Copy the full `docs/` folder contents into a new `versioned_docs/version-3.0.1/` folder.
+- Create a versioned sidebars file based from your current [sidebar](docs-introduction.mdx#sidebar) configuration (if it exists) - saved as `versioned_sidebars/version-3.0.1-sidebars.json`.
+- Append the new version number 3.0.1 to `versions.json`.
+
+:::tip
+
+**[Version is very important conception in the docus](https://vulnsystem.github.io/docs/versionin).**
+
+If you do not know when to create a new version , please read teh [versioning behavior](https://vulnsystem.github.io/docs/versioning#configuring-versioning-behavior). 
+
+How to tag a new version, please following the command.
+```bash yarn
+yarn docusaurus docs:version 3.0.1
+```
+:::
+
