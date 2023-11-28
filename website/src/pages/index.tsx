@@ -43,7 +43,7 @@ function HeroBanner() {
               __html: translate({
                 id: 'homepage.hero.title',
                 message:
-                  'Build <b>optimized</b> websites <b>quickly</b>, focus on your <b>content</b>',
+                  'WoofWoof is an <b>anonymous<b>, <b>end-to-end cryptography<b> distributed event streaming platform',
                 description:
                   'Home page hero title, can contain simple html tags',
               }),
