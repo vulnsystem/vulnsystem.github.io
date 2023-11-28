@@ -12,7 +12,7 @@ import rehypeKatex from 'rehype-katex';
 import configTabs from './src/remark/configTabs';
 
 import versions from './versions.json';
-import VersionsArchived from './versionsArchived.json';
+
 import {
   dogfoodingPluginInstances,
   dogfoodingThemeInstances,
@@ -31,11 +31,6 @@ import type {Options as BlogOptions} from '@docusaurus/plugin-content-blog';
 import type {Options as PageOptions} from '@docusaurus/plugin-content-pages';
 import type {Options as IdealImageOptions} from '@docusaurus/plugin-ideal-image';
 import type {Options as ClientRedirectsOptions} from '@docusaurus/plugin-client-redirects';
-
-const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
-  0,
-  5,
-);
 
 function isPrerelease(version: string) {
   return (
