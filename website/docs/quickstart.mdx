@@ -118,13 +118,13 @@ Please read the **[the solution](https://github.com/orgs/community/discussions/3
 ## Add new files
 
 ### Creae an new mdx file {#createfile}
-Add or adapt the files in the **website/docs** dir
+Add or adapt the files in the `website/docs` dir
 
 ### Adapte the sidebar {#adpatesidebar}
-Adappte the sidebar configration in the **website/sidebars.ts** file
+Adappte the sidebar configration in the `website/sidebars.ts` file
 
 ### Adapte the navbar optional {#adpatenavbar}
-In **website/docusaurus.config.ts** file, please adpate the **docId** to make which doc will be loaded default when click the label in the navbar.
+In `website/docusaurus.config.ts` file, please adpate the **docId** to make which doc will be loaded default when click the label in the navbar.
 
 ```js title="docusaurus.config.ts"
       navbar: {
@@ -170,7 +170,7 @@ yarn docusaurus docs:version 3.0.1
 When tagging a new version, the document versioning mechanism will:
 
 - Copy the full `docs/` folder contents into a new `versioned_docs/version-3.0.1/` folder.
-- Create a versioned sidebars file based from your current [sidebar](docs-introduction.mdx#sidebar) configuration (if it exists) - saved as `versioned_sidebars/version-3.0.1-sidebars.json`.
+- Create a versioned sidebars file based from `website/sidebars.ts` - saved as `versioned_sidebars/version-3.0.1-sidebars.json`.
 - Append the new version number 3.0.1 to `versions.json`.
 
 :::tip
