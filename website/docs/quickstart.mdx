@@ -18,15 +18,15 @@ So we fork a mature website like docusaurus.io as initial status.
 The docusaurus.io is one of repositories in Facebook, So the [repository](https://github.com/facebook/docusaurus) can be forked to your orgniaztion.
 
 ## Rename the Repository on Github
-The name of the repository should adapte to ** vulnsystem.github.io ** in the settings page. vulnsystem is your orgniaztion name.
-Change the branch in the settings > pages to ** main with docs dir **. To open the vulnsystem.github.io in broswer, the readme will be loaded.
+The name of the repository should adapte to **vulnsystem.github.io** in the settings page. vulnsystem is your orgniaztion name.
+Change the branch in the settings > pages to **main with docs dir**. To open the vulnsystem.github.io in broswer, the readme will be loaded.
 
 ## Adapt the page branch of website
-To open the cloned repository in broswer, change the branch in the settings > pages to ** gh-pages with root dir **.
+To open the cloned repository in broswer, change the branch in the settings > pages to **gh-pages with root dir**.
 If there is no gh-pages branch in the repository, create the new branch manully.
 
-## Configuration
-Docusaurus gives us the ability to declare its configuration in various **ways**.  Please click [docusaurus.config.ts](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/docusaurus.config.ts) to adapt the configuration. 
+## Configure docusaurus.config.ts
+Docusaurus gives us the ability to declare its configuration in various **ways**.  Please click **[docusaurus.config.ts](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/docusaurus.config.ts)** to adapt the configuration. 
 
 ```js title="docusaurus.config.ts"
 export default async function createConfigAsync() {
@@ -111,6 +111,48 @@ If the following error occur:
 Conversion error: Jekyll::Converters::Scss encountered an error while converting 'assets/css/style.scss':
 No such file or directory @ dir_chdir - /github/workspace/docs
 
-Please read the **[5-minute solution](https://github.com/orgs/community/discussions/32805)** online.
+Please read the **[the solution](https://github.com/orgs/community/discussions/32805)** online.
 🎯 As to this project, add the docs directory in the root of gh-pages branch.
+:::
+
+## Add new files
+
+### Creae an new mdx file {#createfile}
+Add or adapt the files in the **website/docs** dir
+
+### Adapte the sidebar {#adpatesidebar}
+Adappte the sidebar configration in the **website/sidebars.ts** file
+
+### Adapte the navbar optional {#adpatenavbar}
+In **website/docusaurus.config.ts** file, please adpate the **docId** to make which doc will be loaded default when click the label in the navbar.
+
+```js title="docusaurus.config.ts"
+      navbar: {
+        hideOnScroll: true,
+        title: 'WoofWoof',
+        logo: {
+          alt: '',
+          src: 'img/docusaurus.svg',
+          srcDark: 'img/docusaurus_keytar.svg',
+          width: 32,
+          height: 32,
+        },
+        items: [
+          {
+            type: 'doc',
+            position: 'left',
+            docId: 'quickstart',
+            label: 'Docus',
+          },
+          {
+            type: 'docSidebar',
+            position: 'left',
+            sidebarId: 'api',
+            label: 'API',
+          },
+```
+:::tip
+
+🎯 The docId in the items have been adapted from **introduction** to **quickstart**, so when I click the Docus in the navbar, the quickstart.mdx file will be loaded defaultly.
+🎯 The label in the items have been adapted from **Doc** to **Dous**, so when home page loaded the navbar info changed to Docus.
 :::
