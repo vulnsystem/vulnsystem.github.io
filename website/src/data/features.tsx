@@ -21,7 +21,7 @@ export type FeatureItem = {
 const FEATURES: FeatureItem[] = [
   {
     title: translate({
-      message: 'Powered by MDX',
+      message: 'Based on Kafka',
       id: 'homepage.features.powered-by-mdx.title',
     }),
     image: {
@@ -31,16 +31,15 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.powered-by-mdx.text">
-        Save time and focus on text documents. Simply write docs and blog posts
-        with MDX, and Docusaurus builds them into static HTML files ready to be
-        served. You can even embed React components in your Markdown thanks to
-        MDX.
+        Apache Kafka is an open-source distributed event streaming platform 
+        used for high-performance data pipelines, streaming analytics, \
+        data integration, and mission-critical applications.
       </Translate>
     ),
   },
   {
     title: translate({
-      message: 'Built Using React',
+      message: 'Powered by Ethereum',
       id: 'homepage.features.built-using-react.title',
     }),
     image: {
@@ -50,9 +49,10 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.built-using-react.text">
-        Extend and customize your project&apos;s layout by writing React
-        components. Leverage the pluggable architecture, and design your own
-        site while reusing the same data created by Docusaurus plugins.
+        Verifying the identity of participants using crypto's methods, 
+        involving secp256k1 private and public key pairs. 
+        Granting or denying permissions to perform specific actions, 
+        handled by smart contracts with predefined rules.
       </Translate>
     ),
   },
