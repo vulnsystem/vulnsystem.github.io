@@ -553,16 +553,6 @@ export default async function createConfigAsync() {
             type: 'docsVersionDropdown',
             position: 'right',
             dropdownActiveClassDisabled: true,
-            dropdownItemsAfter: [
-              {
-                type: 'html',
-                value: '<hr class="dropdown-separator">',
-              },
-              {
-                to: '/versions',
-                label: 'All versions',
-              },
-            ],
           },
           {
             type: 'localeDropdown',
@@ -644,7 +634,7 @@ export default async function createConfigAsync() {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/docusaurus.config.ts',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io',
               },
               {
                 label: 'Twitter',
