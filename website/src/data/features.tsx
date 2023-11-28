@@ -77,7 +77,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: translate({
-      message: 'Document Versioning',
+      message: 'Distributed system',
       id: 'homepage.features.document-versioning.title',
     }),
     image: {
@@ -87,8 +87,9 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.document-versioning.text">
-        Support users on all versions of your project. Document versioning helps
-        you keep documentation in sync with project releases.
+        The system consists of multiple independent nodes 
+        which communicate with each other to share information and coordinate their activities. 
+        If one node fails, the system should be able to continue functioning.
       </Translate>
     ),
   },
