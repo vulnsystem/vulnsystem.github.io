@@ -446,11 +446,6 @@ export default async function createConfigAsync() {
               './_dogfooding/dogfooding.css',
             ],
           },
-          gtag: !(isDeployPreview || isBranchDeploy)
-            ? {
-                trackingID: ['G-E5CR2Q1NRE'],
-              }
-            : undefined,
           sitemap: {
             // Note: /tests/docs already has noIndex: true
             ignorePatterns: ['/tests/{blog,pages}/**'],
