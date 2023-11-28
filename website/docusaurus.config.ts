@@ -398,7 +398,7 @@ export default async function createConfigAsync() {
               isDeployPreview ||
               isBranchDeploy ||
               isBuildFast
-                ? getLastVersion()
+                ? "current"
                 : getLastVersion(),
 
             onlyIncludeVersions: (() => {
