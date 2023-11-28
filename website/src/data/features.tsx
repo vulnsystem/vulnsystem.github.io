@@ -68,8 +68,8 @@ const FEATURES: FeatureItem[] = [
     },
     text: (
       <Translate id="homepage.features.ready-for-translations.text">
-        Obtain one shared secret through the ECDH key exchange by crypto's key. 
-        Use a key derivation function (KDF) to derive a symmetric key from the shared secret. 
+        Obtain one shared secret through the ECDH key exchange with crypto's key. 
+        Use a key derivation function to derive a symmetric key from the shared secret. 
         Choose a symmetric encryption algorithm with the derived key to encrypt messages.
       </Translate>
     ),
@@ -94,7 +94,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: translate({
-      message: 'Content Search',
+      message: 'Collaboration',
       id: 'homepage.features.content-search.title',
     }),
     image: {
@@ -106,7 +106,7 @@ const FEATURES: FeatureItem[] = [
       <Translate id="homepage.features.content-search.text">
         No licensing to prevent users from using the software for various purposes. 
         Encourage collaboration not only to develop software, 
-        but also to build anonymous, end-to-end cryptography, and privacy protection environment.
+        but also to build untraceable and privacy protection environment.
       </Translate>
     ),
   },
