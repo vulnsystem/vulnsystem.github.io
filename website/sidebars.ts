@@ -20,7 +20,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'installation',
         'tokengeneration',
-        'playground',
+        'restapis',
         'typescript-support',
       ],
     },
