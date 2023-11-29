@@ -1,5 +1,7 @@
 {
   "docs": [
+    "quickstart",
+    "homepage",
     "introduction",
     {
       "type": "category",
