@@ -516,9 +516,9 @@ export default async function createConfigAsync() {
         },
         items: [
           {
-            type: 'docSidebar',
+            type: 'doc',
             position: 'left',
-            sidebarId: 'api',
+            docId: 'introduction',
             label: 'Developer',
           },
           {to: 'blog', label: 'Blog', position: 'left'},
@@ -528,12 +528,6 @@ export default async function createConfigAsync() {
             label: 'Community',
             position: 'left',
             activeBaseRegex: `/community/`,
-          },
-          {
-            type: 'doc',
-            position: 'left',
-            docId: 'quickstart',
-            label: 'Docus',
           },
           // This item links to a draft doc: only displayed in dev
           {
