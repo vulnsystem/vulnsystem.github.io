@@ -9,8 +9,6 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   docs: [
-    'quickstart',
-    'homepage',
     'introduction',
     {
       type: 'category',
