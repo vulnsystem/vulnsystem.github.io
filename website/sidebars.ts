@@ -19,7 +19,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'installation',
-        'configuration',
+        'tokengeneration',
         'playground',
         'typescript-support',
       ],
