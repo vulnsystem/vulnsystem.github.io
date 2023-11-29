@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'installation',
         'tokengeneration',
+        'kafkaclients',
         'restapis',
         'streamclients',
       ],
