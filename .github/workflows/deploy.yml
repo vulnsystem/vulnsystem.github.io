@@ -30,7 +30,7 @@ jobs:
           cache: yarn
       - name: Installation
         run: yarn
-      - name: Build blog-only
+      - name: Build all project
         working-directory: website
         run: |
           yarn docusaurus docs:version 3.0.1
