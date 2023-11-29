@@ -21,7 +21,7 @@ const sidebars: SidebarsConfig = {
         'installation',
         'tokengeneration',
         'restapis',
-        'typescript-support',
+        'streamclients',
       ],
     },
     {
