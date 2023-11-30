@@ -54,7 +54,7 @@ const sidebars: SidebarsConfig = {
             'guides/docs/guides-kafkarestapis-comsumer',
              {
               type: 'category',
-              label: 'Sidebar',
+              label: 'Sideb',
               link: {
                 type: 'doc',
                 id: 'guides/docs/sidebar/index',
