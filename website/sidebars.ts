@@ -38,6 +38,9 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'guides/creating-pages',
+        'guides/docs/guides-kafkasecurity',
+        'guides/docs/guides-kafkaclientsecurity',
+        'guides/docs/guides-kafkarestproxy',
         {
           type: 'category',
           label: 'Docs',
