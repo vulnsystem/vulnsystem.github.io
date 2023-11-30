@@ -137,14 +137,10 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Advanced Guides',
-      link: {type: 'doc', id: 'advanced/index'},
+      label: 'Kaleidoscope',
+      link: {type: 'doc', id: 'kaleidoscope/kaleidoscope'},
       items: [
-        'advanced/architecture',
-        'advanced/plugins',
-        'advanced/routing',
-        'advanced/ssg',
-        'advanced/client',
+        'kaleidoscope/kaleidoscope-chatgpt',
       ],
     },
     {
