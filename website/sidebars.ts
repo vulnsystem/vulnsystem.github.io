@@ -37,7 +37,6 @@ const sidebars: SidebarsConfig = {
         image: '/img/docusaurus.png',
       },
       items: [
-        'guides/creating-pages',
         'guides/docs/guides-kafkasecurity',
         'guides/docs/guides-kafkaclientsecurity',
         'guides/docs/guides-kafkarestproxy',
@@ -80,7 +79,6 @@ const sidebars: SidebarsConfig = {
             'stream/stream-feeds',
           ],
         },
-        'blog',
         {
           type: 'category',
           label: 'Markdown Features',
@@ -102,14 +100,6 @@ const sidebars: SidebarsConfig = {
             'guides/markdown-features/head-metadata',
           ],
         },
-        'styling-layout',
-        'swizzling',
-        'static-assets',
-        'search',
-        'browser-support',
-        'seo',
-        'using-plugins',
-        'deployment',
         {
           type: 'category',
           label: 'Internationalization',
@@ -132,7 +122,6 @@ const sidebars: SidebarsConfig = {
             },
           ],
         },
-        'guides/whats-next',
       ],
     },
     {
