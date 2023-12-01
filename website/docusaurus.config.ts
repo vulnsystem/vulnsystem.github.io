@@ -588,10 +588,6 @@ export default async function createConfigAsync() {
                 label: 'Installation',
                 to: 'docs/installation',
               },
-              {
-                label: 'Migration from v1 to v2',
-                to: 'docs/migration',
-              },
             ],
           },
           {
