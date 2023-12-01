@@ -8,6 +8,75 @@
 import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
+  woofwoof: [
+    'introduction',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      link: {
+        type: 'generated-index',
+      },
+      collapsed: false,
+      items: [
+        'installation',
+        'tokengeneration',
+        'kafkaclients',
+        'restapis',
+        'streamclients',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Guides',
+      link: {
+        type: 'generated-index',
+        title: 'Docusaurus Guides',
+        description:
+          "Let's learn about the most important Docusaurus concepts!",
+        keywords: ['guides'],
+        image: '/img/docusaurus.png',
+      },
+      items: [
+        'guides/docs/guides-kafkasecurity',
+        'guides/docs/guides-kafkaclientsecurity',
+        'guides/docs/guides-kafkarestproxy',
+        {
+          type: 'category',
+          label: 'REST APIs',
+          link: {
+            type: 'doc',
+            id: 'guides/docs/guides-kafkarestapis',
+          },
+          items: [
+            'guides/docs/guides-kafkarestapis-authentication',
+            'guides/docs/guides-kafkarestapis-producer',
+            'guides/docs/guides-kafkarestapis-comsumer',
+          ]
+        },
+     ],
+   },
+   {
+      type: 'category',
+      label: 'Stream clients',
+      link: {
+        type: 'doc',
+        id: 'stream/stream-getstreamio',
+      },
+      items: [
+        'stream/stream-chat',
+        'stream/stream-videoaudio',
+        'stream/stream-feeds',
+      ],
+   },
+   {
+      type: 'category',
+      label: 'Kaleidoscope',
+      link: {type: 'doc', id: 'kaleidoscope/kaleidoscope'},
+      items: [
+        'kaleidoscope/kaleidoscope-chatgpt',
+      ],
+    },
+  ],
   docs: [
     'introduction',
     {
