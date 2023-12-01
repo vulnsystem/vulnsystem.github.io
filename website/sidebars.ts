@@ -76,6 +76,15 @@ const sidebars: SidebarsConfig = {
         'kaleidoscope/kaleidoscope-chatgpt',
       ],
     },
+    {
+      type: 'category',
+      label: 'Docusaurus',
+      link: {type: 'doc', id: 'quickstart'},
+      items: [
+        'quickstart',
+        'homepage',
+      ],
+    },
   ],
   api: [
     'cli',
