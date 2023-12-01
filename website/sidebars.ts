@@ -86,7 +86,7 @@ const sidebars: SidebarsConfig = {
     },
   ],
   docs: [
-    'introduction',
+    'docusintroduction',
     {
       type: 'category',
       label: 'Getting Started',
