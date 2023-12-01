@@ -77,7 +77,7 @@ const sidebars: SidebarsConfig = {
       ],
     },
   ],
-  docs: [
+  docss: [
     'introduction',
     {
       type: 'category',
