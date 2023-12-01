@@ -78,7 +78,6 @@ const sidebars: SidebarsConfig = {
     },
   ],
   abc: [
-    'introduction',
     {
       type: 'category',
       label: 'Getting Started',
