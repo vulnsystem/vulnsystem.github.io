@@ -81,8 +81,8 @@ const sidebars: SidebarsConfig = {
       label: 'Docusaurus',
       link: {type: 'doc', id: 'quickstart'},
       items: [
-        'quickstart',
         'homepage',
+        'docustips',
       ],
     },
   ],
