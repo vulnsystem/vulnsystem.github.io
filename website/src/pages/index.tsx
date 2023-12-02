@@ -224,7 +224,7 @@ function TopBanner() {
         {'🎉\xa0'}
         <Link to="/blog/releases/3.0" className={styles.topBannerTitleText}>
           <Translate id="homepage.banner.launch.3.0">
-            {'WoofWoof \xa0website is\xa0out!️'}
+            {'WoofWoof website is out!️'}
           </Translate>
         </Link>
         {'\xa0🥳'}
