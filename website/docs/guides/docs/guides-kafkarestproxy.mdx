@@ -94,4 +94,4 @@ Here is a summary of the RBAC REST Proxy security workflow:
 3. The generated token is used to impersonate the user request and authenticate between Kafka clients and the Kafka cluster. For Kafka clients, the SASL_PLAINTEXT/SASL_SSL security protocol is used and the proprietary callback handler passes the token to the Kafka cluster. Similarly, when communicating with Schema Registry, the authentication token is passed to the Schema Registry client using a proprietary implementation of the BearerAuthCredentialProvider interface.
 4. If the user does not have the requisite role or ACL permission for the requested resource (for example, topic, group, or cluster), then the REST API call fails and returns an error with the HTTP 403 status code.
 
-![Docusaurus banner](./assets/woof-rest-proxy-security-workflow.png 'REST proxy security workflow.png')
+![Docusaurus banner](assets/woof-rest-proxy-security-workflow.png 'REST proxy security workflow.png')
