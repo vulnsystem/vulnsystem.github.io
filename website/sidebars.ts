@@ -40,19 +40,11 @@ const sidebars: SidebarsConfig = {
         'guides/docs/guides-kafkasecurity',
         'guides/docs/guides-kafkaclientsecurity',
         'guides/docs/guides-kafkarestproxy',
-        {
-          type: 'category',
-          label: 'REST APIs',
-          link: {
-            type: 'doc',
-            id: 'guides/docs/guides-kafkarestapis',
-          },
-          items: [
-            'guides/docs/guides-kafkarestapis-authentication',
-            'guides/docs/guides-kafkarestapis-producer',
-            'guides/docs/guides-kafkarestapis-comsumer',
-          ]
-        },
+        'guides/docs/guides-kafkarestapis-tokengen',
+        'guides/docs/guides-kafkarestapis-authentication',
+        'guides/docs/guides-kafkarestapis-authorization',
+        'guides/docs/guides-kafkarestapis-producer',
+        'guides/docs/guides-kafkarestapis-comsumer',
      ],
    },
    {
