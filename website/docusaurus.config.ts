@@ -585,8 +585,20 @@ export default async function createConfigAsync() {
                 to: 'docs',
               },
               {
-                label: 'Installation',
-                to: 'docs/installation',
+                label: 'Configuration',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io/edit/main/website/docusaurus.config.ts',
+              },
+              {
+                label: 'Sidebar',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io/edit/main/website/sidebars.ts',
+              },
+              {
+                label: 'Actions',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io/actions',
+              },
+              {
+                label: 'Docs',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io/tree/main/website/docs',
               },
             ],
           },
