@@ -581,8 +581,8 @@ export default async function createConfigAsync() {
             title: 'Learn',
             items: [
               {
-                label: 'Introduction',
-                to: 'docs',
+                label: 'Homepage',
+                href: 'https://github.com/vulnsystem/vulnsystem.github.io/edit/main/website/src/pages/index.tsx',
               },
               {
                 label: 'Configuration',
