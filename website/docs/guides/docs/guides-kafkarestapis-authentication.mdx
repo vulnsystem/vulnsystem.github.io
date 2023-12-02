@@ -13,4 +13,192 @@ description: Create a Markdown Document
 
 Users can access the system or service without providing any explicit identification credentials like identity card and cell-phone number. Users generate an Ethereum private key to create a **token** (which is kind of digital signature of a specific message) as authenticity. The proxy that needs to validate the user's authenticity which can verify the token using the user's public key. If the token is valid, it proves that the user possesses the private key corresponding to the public key used for verification.
 
+1. To vreify the token, An **interceptor or filter** implemented to detect and block HTTP requests based on a custom header, you can create a filter that checks the value of the header and decides whether to allow or block the request. 
+
+```java title="HeaderFilter.java"
+public class HeaderFilter implements Filter {
+
+  private static final Logger log = LoggerFactory.getLogger(HeaderFilter.class);
+
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
+    // TODO Auto-generated method stub
+	
+  }
+
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    // TODO Auto-generated method stub
+    // Perform your header validation here
+    if (request instanceof HttpServletRequest 
+          && isValidHeaders((HttpServletRequest) request)) {
+      chain.doFilter(request, response);
+      return;
+    }
+    // If not valid, block the request (you can customize this part)
+    response.getWriter().write("Invalid custom header value");
+    response.setContentType("text/plain");
+
+    if (response instanceof HttpServletResponse) {
+      log.debug("HeaderFilter: the response is instanceof HttpServletResponse");
+      HttpServletResponse httpResponse = (HttpServletResponse) response;
+      httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+  }
+
+  @Override
+  public void destroy() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  // Custom method to validate HTTP headers
+  private boolean isValidHeaders(HttpServletRequest request) {
+    // Implement your header validation logic here
+    String token = request.getHeader("oauth-access-token");
+    String expFromHeader = request.getHeader("exp-time");
+    String addressFromHeader = request.getHeader("address");
+
+    if (token == null || expFromHeader == null || addressFromHeader == null) {
+      return false;
+    }
+
+    SignedJWT jwt;
+    JWK publicKey;
+    try {
+      jwt = SignedJWT.parse(token);
+      publicKey = jwt.getHeader().getJWK();
+      if (publicKey == null) {
+        throw new RuntimeException("Token validation failed: Unknown publicKey" + publicKey);
+      }
+
+      if (publicKey instanceof ECKey) {
+        JWSVerifier verifier = new ECDSAVerifier((ECKey) publicKey);
+        verifier.getJCAContext().setProvider(new BouncyCastleProvider());
+        if (!jwt.verify(verifier)) {
+          throw new RuntimeException("Signature check failed: Invalid token signature");
+        }
+      } else {
+        throw new RuntimeException("publicKey is not type of ECKey");
+      }
+
+      JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
+
+      // Get the expiration time (exp) from the claims set
+      Date expDate = claimsSet.getExpirationTime();  
+      if (expDate == null) {
+        throw new RuntimeException("Token validation failed: Expiry not set");
+      }
+
+      long expFromToken = expDate.getTime();
+      if (System.currentTimeMillis() > expFromToken) {
+        log.debug("expFromToken: " + expFromToken); 
+        log.debug("systmCurrent: " + System.currentTimeMillis()); 
+        throw new RuntimeException("Token expired time less than system current");
+      }
+
+      if (expFromToken != Long.parseLong(expFromHeader)) {
+        log.debug("expFromToken: " + expFromToken); 
+        log.debug("expFromHeade: " + Long.parseLong(expFromHeader)); 
+        throw new RuntimeException("Token expired time not equal the exp-time in the http header");
+      }
+
+      String addressFromToken = publicKeyToAddress(publicKey);
+      if (!addressFromToken.equals(addressFromHeader)) {
+        log.debug("addressFromToken: " + addressFromToken); 
+        log.debug("addressFromHeade: " + addressFromHeader); 
+        throw new RuntimeException("Address from token not equal the address in the http header");
+      }
+
+    } catch (RuntimeException | ParseException | JOSEException e) {
+      log.debug("token verificaiton faliure", e);
+      return false;
+    }
+
+    return true;
+  }
+
+  private  String publicKeyToAddress(JWK publicKey) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode jsonNode = null;
+    try {
+      jsonNode = objectMapper.readTree(publicKey.toJSONString());
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+
+    Base64URL yBase64 = Base64URL.from(jsonNode.get("y").toString());
+    byte[] yBytes = yBase64.decode();
+
+    String yHexStr = bytesToHex(yBytes);
+    Base64URL xBase64 = Base64URL.from(jsonNode.get("x").toString());
+    byte[] xBytes = xBase64.decode();
+    String xHexStr = bytesToHex(xBytes);
+
+    String publicKeyHexStr = xHexStr + yHexStr;
+    BigInteger publicKeyBig = new BigInteger(publicKeyHexStr, 16);
+
+    return Keys.getAddress(publicKeyBig);
+  }
+
+  // Convert raw bytes to hexadecimal string
+  private static String bytesToHex(byte[] bytes) {
+    StringBuilder hexString = new StringBuilder();
+    for (byte b : bytes) {
+      String hex = String.format("%02x", b);
+      hexString.append(hex);
+    }
+    return hexString.toString();
+  }
+}
+
+```
+2. In Kafka REST proxy, The KafkaRestApplication class extends the Application class and provides methods for configuring and starting a Jetty server to host the REST API. You need to register this filter in the KafkaRestApplication. Modify the **configurePreResourceHandling** method in your Application class to **register** the filter.
+
+```java title="KafkaRestApplication.java"
+public class KafkaRestApplication extends Application<KafkaRestConfig> {
+
+  List<RestResourceExtension> restResourceExtensions;
+
+  public KafkaRestApplication() {
+    this(new Properties());
+  }
+
+  public KafkaRestApplication(Properties props) {
+    this(new KafkaRestConfig(props));
+  }
+
+  public KafkaRestApplication(KafkaRestConfig config) {
+    this(config, /* path= */ "");
+  }
+
+  public KafkaRestApplication(KafkaRestConfig config, String path) {
+    this(config, path, null);
+  }
+
+  public KafkaRestApplication(KafkaRestConfig config, String path, String listenerName) {
+    super(config, path, listenerName);
+
+    restResourceExtensions =
+        config.getConfiguredInstances(
+            KafkaRestConfig.KAFKA_REST_RESOURCE_EXTENSION_CONFIG, RestResourceExtension.class);
+    config.setMetrics(metrics);
+  }
+
+  @Override
+  public void configurePreResourceHandling(ServletContextHandler context) {
+    // Add the custom header interceptor
+    context.addFilter(new FilterHolder(new HeaderFilter()), "/*", 
+        EnumSet.of(DispatcherType.REQUEST));
+  }
+
+  @Override
+  public void configurePostResourceHandling(ServletContextHandler context) {}
+
+  ......
+}
+```
+
 
