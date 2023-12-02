@@ -221,13 +221,11 @@ function TopBanner() {
   return (
     <div className={styles.topBanner}>
       <div className={styles.topBannerTitle}>
-        {'🎉\xa0'}
         <Link to="/blog/releases/3.0" className={styles.topBannerTitleText}>
           <Translate id="homepage.banner.launch.3.0">
-            {'WoofWoof website is out!️'}
+            {'🎉 WoofWoof website is out!️ 🥳'}
           </Translate>
         </Link>
-        {'\xa0🥳'}
       </div>
       {/*
       <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
