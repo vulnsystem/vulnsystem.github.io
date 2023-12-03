@@ -215,13 +215,13 @@ QiOiJiOTQyZTMxNi05ZTZkLTRhMDctODAxMS1lYmZmNGE4NTVkNDIiLCJnaXRjb2lucyI6Ilt7XCJ
 ```
 
 ```shell tittle="Test script"
-curl 
-  -X POST 
-  -H "Content-Type: application/json" 
-  -H "oauth-access-token: {token}"   
-  -H "exp-time:1702170580000"  
-  -H "address: 5928d983ee384d10c146fa3d56236855cbd4023e"  
-  -d '{"value":{"type":"JSON","data":{"name":"testUser"}}}'  
+curl \
+  -X POST \ 
+  -H "Content-Type: application/json" \
+  -H "oauth-access-token: {token}" \
+  -H "exp-time:1702170580000" \
+  -H "address: 5928d983ee384d10c146fa3d56236855cbd4023e" \
+  -d '{"value":{"type":"JSON","data":{"name":"testUser"}}}' \
   http://localhost:8082/v3/clusters/pYhOCSSST0y1yW085--r-w/topics/jsontest8/records
 ```
 
