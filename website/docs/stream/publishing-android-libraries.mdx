@@ -61,3 +61,207 @@ After choosing a language and an avatar, you’ll end up on this landing page - 
 
 Soon after opening it, your issue will get a comment telling you to verify that you own the domain corresponding to your group ID. To comply with this, add the required TXT record to your domain - how to do this will depend on where your domain is registered, but it should be a fairly simple task. Login to the [goDaddy](https://dcc.godaddy.com/control/portfolio/gitcoins.io/settings) to set the TXT record with the guide from [the issue created](https://issues.sonatype.org/browse/OSSRH-97587) in jira for Sonatype.
 
+## Generating a GPG key pair
+
+As we eluded to earlier, artifacts published on MavenCentral have to be signed by their publishers. You’ll need a GPG key for this.
+
+MavenCentral also has its own documentation for Working with PGP Signatures which you can reference if you get stuck along the way.
+
+This part requires access to the gpg command. There are several ways to install this via package managers, and there are many distributions available for different platforms on gnupg.org.
+
+We'll stick to the command line here on Linux for generating and managing keys.
+
+To generate a new key, run the following command:
+
+```shell
+
+gpg --full-gen-key
+
+```
+You’ll be prompted to enter a few details:
+
+- **Kind of key**: Accept the default value, which is (1) RSA and RSA.
+- **Key size**: 4096.
+- **Expiration**: You can input 0 to generate a key that never expires. You can also create a key that has an expiry date and then renew it periodically, if you prefer to do so.
+- **Real name, email**: Should be obvious.
+- **Comment**: Freeform text, can be left empty.
+After entering these details, you’ll be prompted to enter a passphrase to secure your key with.
+
+Here’s the full flow you'll go through, with a bit of truncation:
+
+```shell
+
+Please select what kind of key you want:
+   (1) RSA and RSA (default)
+   ...
+Your selection? 1
+
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (3072) 4096
+Requested keysize is 4096 bits
+
+Please specify how long the key should be valid.
+         0 = key does not expire
+         ...
+Key is valid for? (0) 0
+Key does not expire at all
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: Marton Braun
+Email address: marton@getstream.io
+Comment: Example key for tutorial
+You selected this USER-ID:
+    "Marton Braun (Example key for tutorial) <marton@getstream.io>"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+
+gpg: key 36271B955BEF072A marked as ultimately trusted
+gpg: revocation certificate stored as '.../gnupg/openpgp-revocs.d\7A5D73CFEDDDBC915986998A36271B955BEF072A.rev'
+public and secret key created and signed.
+
+pub   rsa4096 2024-02-03 [SC]
+      7A5D73CFEDDDBC915986998A36271B955BEF072A
+uid                      Marton Braun (Example key for tutorial) <marton@getstream.io>
+sub   rsa4096 2024-02-03 [E]
+
+```
+
+You can always check the keys you have on your system by running gpg --list-keys:
+
+```shell
+
+gpg --list-keys
+
+```
+
+```shell
+
+gpg: checking the trustdb
+.../gnupg/pubring.kbx
+-----------------------------------------------
+pub   rsa4096 2021-02-03 [SC]
+      7A5D73CFEDDDBC915986998A36271B955BEF072A
+uid           [ultimate] Marton Braun (Example key for tutorial) <marton@getstream.io>
+sub   rsa4096 2021-02-03 [E]
+
+```
+
+Your key’s ID is the last eight digits of its fingerprint (the long hexadecimal string above). In this case, this is 5BEF072A - take note of this, as you’ll use this later.
+
+You’ve generated a pair of keys - a private and a public key. You’ll keep the private one hidden and use it to sign your artifacts. The public key has to be uploaded to the server so that anyone can check that it belongs to you, which you can do by running the following (use your own key ID!):
+
+```shell
+
+gpg --keyserver keyserver.ubuntu.com --send-keys 5BEF072A
+
+
+```
+
+Your private key will need to be referenced by your project when it signs the artifacts. You can get a base 64 export of it with the following:
+
+```shell
+
+gpg --export-secret-keys 5BEF072A | base64
+
+```
+
+## Setting up publication in your project
+
+That’s a lot of work without touching your project, but the time has come to do that now. In the next few steps, you will:
+
+- Add Gradle scripts that set up the publication plugin required to push artifacts to a repository.
+- Configure the properties of the library you’re releasing.
+- Grab the necessary authentication details along with the private key you’ve just exported.
+
+### Root project Gradle configuration
+
+To easily automate publishing later, you'll use the gradle-nexus/publish-plugin tool. This has to be added in your project level (root) build.gradle file as a dependency.
+
+You can do this either with a plugins block:
+
+```js title="build.gradle"
+buildscript {
+    repositories {
+        ...
+        mavenCentral()
+    }
+
+    dependencies {
+        ...
+        classpath Dependencies.gradleNexusPublishPlugin
+    }
+}
+```
+
+### Publishing configuration
+
+Next, create a new file called publish-root.gradle in a new scripts folder inside your project. This will contain global configuration you need for publishing, grabbing input values for your scripts, and defining the MavenCentral repository.
+
+```js title="scripts/publish-root.gradle"
+import io.getstream.chat.android.Configuration
+
+// Create variables with empty default values
+ext["ossrhUsername"] = ''
+ext["ossrhPassword"] = ''
+ext["sonatypeStagingProfileId"] = ''
+ext["signing.keyId"] = ''
+ext["signing.password"] = ''
+ext["signing.key"] = ''
+ext["snapshot"] = ''
+
+File secretPropsFile = project.rootProject.file('local.properties')
+if (secretPropsFile.exists()) {
+    // Read local.properties file first if it exists
+    Properties p = new Properties()
+    new FileInputStream(secretPropsFile).withCloseable { is -> p.load(is) }
+    p.each { name, value -> ext[name] = value }
+} else {
+    // Use system environment variables
+    ext["ossrhUsername"] = System.getenv('OSSRH_USERNAME')
+    ext["ossrhPassword"] = System.getenv('OSSRH_PASSWORD')
+    ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
+    ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID')
+    ext["signing.password"] = System.getenv('SIGNING_PASSWORD')
+    ext["signing.key"] = System.getenv('SIGNING_KEY')
+    ext["snapshot"] = System.getenv('SNAPSHOT')
+}
+
+if (snapshot) {
+    ext["rootVersionName"] = Configuration.snapshotVersionName
+} else {
+    ext["rootVersionName"] = Configuration.versionName
+}
+
+// Set up Sonatype repository
+nexusPublishing {
+    repositories {
+        sonatype {
+            stagingProfileId = sonatypeStagingProfileId
+            username = ossrhUsername
+            password = ossrhPassword
+            version = rootVersionName
+        }
+    }
+}
+
+tasks.withType(dokkaHtmlMultiModule.getClass()) {
+    includes.from("DokkaRoot.md")
+}
+
+```
+
+The first three variables will be used to sign the artifacts after they’re built:
+
+- signing.keyId: the ID of the GPG key pair, the last eight characters of its fingerprint
+- signing.password: the passphrase of the key pair
+- signing.key: the base64 encoded private key you exported earlier
+- osshrUsername and ossrhPassword: are your account details for [MavenCentral](https://s01.oss.sonatype.org/)
+- sonatypeStagingProfileId: Go to https://s01.oss.sonatype.org/ and log in. In the menu on the left, select Staging profiles, select your profile, and then look for the ID in the [URL](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2). The 638cedd9d39c2 is the sonatypeStagingProfileId.
+
+:::tips
+
+If you're on the new Sonatype infrastructure (happens if you've registered after 2021-02-24 or requested it specifically), you have to add explicit URLs pointing to **s01.oss.sonatype.org** in this config block next to the existing parameters
+
+:::
