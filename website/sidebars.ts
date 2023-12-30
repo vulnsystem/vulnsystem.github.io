@@ -49,14 +49,14 @@ const sidebars: SidebarsConfig = {
    },
    {
       type: 'category',
-      label: 'Stream clients',
+      label: 'Chat Messaging',
       link: {
         type: 'doc',
         id: 'stream/stream-getstreamio',
       },
       items: [
-        'stream/stream-chat',
-        'stream/stream-videoaudio',
+        'stream/publishing-android-libraries',
+        'stream/debugging-with-ngrok',
         'stream/stream-feeds',
       ],
    },
