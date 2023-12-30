@@ -15,13 +15,10 @@ The fanciest place you can be in is The Central Repository via Sonatype OSSRH (O
 
 The simplest choice would be [JitPack](https://jitpack.io/), which might not give you much in terms of customization or control, but is very easy to get started with. All you have to do is publish your project on GitHub, and JitPack should be able to build and distribute it immediately. If you’re new to libraries, this is a great choice for getting your code out there.
 
-
 :::
 
 :::warning Help
-
 I try to use JitPack but failed to config. If you success to use JitPack in the [Android SDK for Stream Chat](https://github.com/GetStream/stream-chat-android), please let me know. Thanks.
-
 :::
 
 ## Overview
@@ -74,9 +71,7 @@ We'll stick to the command line here on Linux for generating and managing keys.
 To generate a new key, run the following command:
 
 ```shell
-
 gpg --full-gen-key
-
 ```
 You’ll be prompted to enter a few details:
 
@@ -90,7 +85,6 @@ After entering these details, you’ll be prompted to enter a passphrase to secu
 Here’s the full flow you'll go through, with a bit of truncation:
 
 ```shell
-
 Please select what kind of key you want:
    (1) RSA and RSA (default)
    ...
@@ -125,19 +119,15 @@ pub   rsa4096 2024-02-03 [SC]
       7A5D73CFEDDDBC915986998A36271B955BEF072A
 uid                      Marton Braun (Example key for tutorial) <marton@getstream.io>
 sub   rsa4096 2024-02-03 [E]
-
 ```
 
 You can always check the keys you have on your system by running gpg --list-keys:
 
 ```shell
-
 gpg --list-keys
-
 ```
 
 ```shell
-
 gpg: checking the trustdb
 .../gnupg/pubring.kbx
 -----------------------------------------------
@@ -145,7 +135,6 @@ pub   rsa4096 2021-02-03 [SC]
       7A5D73CFEDDDBC915986998A36271B955BEF072A
 uid           [ultimate] Marton Braun (Example key for tutorial) <marton@getstream.io>
 sub   rsa4096 2021-02-03 [E]
-
 ```
 
 Your key’s ID is the last eight digits of its fingerprint (the long hexadecimal string above). In this case, this is 5BEF072A - take note of this, as you’ll use this later.
@@ -153,18 +142,13 @@ Your key’s ID is the last eight digits of its fingerprint (the long hexadecima
 You’ve generated a pair of keys - a private and a public key. You’ll keep the private one hidden and use it to sign your artifacts. The public key has to be uploaded to the server so that anyone can check that it belongs to you, which you can do by running the following (use your own key ID!):
 
 ```shell
-
 gpg --keyserver keyserver.ubuntu.com --send-keys 5BEF072A
-
-
 ```
 
 Your private key will need to be referenced by your project when it signs the artifacts. You can get a base 64 export of it with the following:
 
 ```shell
-
 gpg --export-secret-keys 5BEF072A | base64
-
 ```
 
 ## Setting up publication in your project
@@ -200,7 +184,6 @@ buildscript {
 Next, create a new file called publish-root.gradle in a new scripts folder inside your project. This will contain global configuration you need for publishing, grabbing input values for your scripts, and defining the MavenCentral repository.
 
 ```js title="scripts/publish-root.gradle"
-
 import io.getstream.chat.android.Configuration
 
 // Create variables with empty default values
@@ -255,7 +238,6 @@ nexusPublishing {
 tasks.withType(dokkaHtmlMultiModule.getClass()) {
     includes.from("DokkaRoot.md")
 }
-
 ```
 
 The first three variables will be used to sign the artifacts after they’re built:
@@ -278,7 +260,6 @@ You’ll set two properties on the Gradle project itself here, the group ID and 
 
 
 ```js title="scripts/publish-module.gradle"
-
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'org.jetbrains.dokka'
@@ -370,14 +351,12 @@ signing {
     )
     sign publishing.publications
 }
-
 ```
 
 ### Version configuraiton
 
 Finally see the group ID, artifact ID, and version being set, so that the publication script can make use of them. Then, the script itself is applied. This is all the code you need to add per-module if you are publishing your library in multiple artifacts, everything else is done by the common script.
 ```js title="buildSrc/Configuration.kt"
-
 object Configuration {
     const val compileSdk = 34
     const val targetSdk = 34
@@ -391,7 +370,6 @@ object Configuration {
     const val snapshotVersionName = "$majorVersion.$minorVersion.${patchVersion + 1}-SNAPSHOT"
     const val artifactGroup = "io.gitcoins"
 }
-
 ```
 
 ## Github Action integration
@@ -404,7 +382,6 @@ Your secret variables - for the list of these, look at the publishing script aga
 Now, let’s create the GitHub Actions workflow that will put all of this together. The configuration for this will go in the .github/workflows/publish.yml file of the repository. This publish workflow will run every time a new release is created in the repository (you can also change the triggers to run when a tag is created, for example).
 
 ```js title="workflows/publish-beta.yml"
-
 name: PublishBeta
 
 on:
@@ -438,7 +415,6 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
-
 ```
 
 ## Your first release
@@ -449,5 +425,30 @@ After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothin
 git tag -a v6.0.8-beta16 -m "v6.0.8.2 publish"
 git push origin v6.0.8-beta16
 ```
-
 Go to [action page](https://github.com/TheBestOrNothing/stream-chat-android/actions) in the repository, lookup the detailed info in the running workflow. After the workflow run successfully, go to the [Nexus Repository Manager](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2) and in the menu on the left, select Staging repositories.Search or find your repository (search gitcoins in the Artifact Search), which has your group ID in its name. If you select it and look at the Content tab, you’ll see the files that have been published.
+
+## Using the publish library
+
+### Create a New Android Studio Project
+
+To get started with the Jetpack Compose version of the Android Chat SDK, open Android Studio (Giraffe or newer) and create a new project.
+
+- Select the Empty Activity template
+- Name the project ChatTutorial
+- Set the package name to com.example.chattutorial
+
+### Add Stream Chat Compose SDK
+Let's add the Stream Chat Compose SDK to the project's dependencies. **io.gitcoins:stream-chat-android-compose:6.0.8.2** and **io.gitcoins:stream-chat-android-offline:6.0.8.2** are coming from Nexus Repository which have been published according to this guide.
+
+```js title="build.gradle"
+dependencies {
+
+    implementation("io.gitcoins:stream-chat-android-compose:6.0.8.2")
+    implementation("io.gitcoins:stream-chat-android-ui-utils:6.0.8.2")
+    implementation("io.gitcoins:stream-chat-android-offline:6.0.8.2")
+
+    //implementation("io.getstream:stream-chat-android-compose:6.0.8")
+    //implementation("io.getstream:stream-chat-android-offline:6.0.8")
+}
+```
+
