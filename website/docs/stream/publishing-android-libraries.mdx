@@ -200,6 +200,7 @@ buildscript {
 Next, create a new file called publish-root.gradle in a new scripts folder inside your project. This will contain global configuration you need for publishing, grabbing input values for your scripts, and defining the MavenCentral repository.
 
 ```js title="scripts/publish-root.gradle"
+
 import io.getstream.chat.android.Configuration
 
 // Create variables with empty default values
@@ -209,6 +210,7 @@ ext["sonatypeStagingProfileId"] = ''
 ext["signing.keyId"] = ''
 ext["signing.password"] = ''
 ext["signing.key"] = ''
+ext["signing.secretKeyRingFile"] = ''
 ext["snapshot"] = ''
 
 File secretPropsFile = project.rootProject.file('local.properties')
@@ -238,6 +240,10 @@ if (snapshot) {
 nexusPublishing {
     repositories {
         sonatype {
+            /* Existing params here... */
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+
             stagingProfileId = sonatypeStagingProfileId
             username = ossrhUsername
             password = ossrhPassword
@@ -265,3 +271,183 @@ The first three variables will be used to sign the artifacts after they’re bui
 If you're on the new Sonatype infrastructure (happens if you've registered after 2021-02-24 or requested it specifically), you have to add explicit URLs pointing to **s01.oss.sonatype.org** in this config block next to the existing parameters
 
 :::
+
+### Release configuration
+
+You’ll set two properties on the Gradle project itself here, the group ID and the version of the artifact. You’ll see where these uppercase values come from later on, when you apply this publication script in the module level build.gradle files.
+
+
+```js title="scripts/publish-module.gradle"
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'org.jetbrains.dokka'
+
+tasks.register('androidSourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        from android.sourceSets.main.java.srcDirs
+        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
+}
+
+tasks.withType(dokkaHtmlPartial.getClass()).configureEach {
+    pluginsMapConfiguration.set(
+            ["org.jetbrains.dokka.base.DokkaBase": """{ "separateInheritedMembers": true}"""]
+    )
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives javadocJar
+}
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                tasks.named("generateMetadataFileForReleasePublication").configure { dependsOn("androidSourcesJar") }
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    from components.java
+                }
+
+                artifact javadocJar
+
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'Stream Chat official Android SDK'
+                    url = 'https://github.com/thebestornothing/stream-chat-android'
+                    licenses {
+                        license {
+                            name = 'Stream License'
+                            url = 'https://github.com/thebestornothing/stream-chat-android/blob/main/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'leandroBorgesFerreira'
+                            name = 'Leandro Borges Ferreira'
+                            email = 'leandro@getstream.io'
+                        }
+                        developer {
+                            id = 'bychkovdmitry'
+                            name = 'Dmitrii Bychkov'
+                            email = 'dmitrii@getstream.io'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/thebestornothing/stream-chat-android.git'
+                        developerConnection = 'scm:git:ssh://github.com/thebestornothing/stream-chat-android.git'
+                        url = 'https://github.com/thebestornothing/stream-chat-android/tree/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"],
+    )
+    sign publishing.publications
+}
+
+```
+
+### Version configuraiton
+
+Finally see the group ID, artifact ID, and version being set, so that the publication script can make use of them. Then, the script itself is applied. This is all the code you need to add per-module if you are publishing your library in multiple artifacts, everything else is done by the common script.
+```js title="buildSrc/Configuration.kt"
+
+object Configuration {
+    const val compileSdk = 34
+    const val targetSdk = 34
+    const val sampleTargetSdk = 34
+    const val minSdk = 21
+    const val majorVersion = 6
+    const val minorVersion = 0
+    const val patchVersion = 8
+    const val myVersion = 2
+    const val versionName = "$majorVersion.$minorVersion.$patchVersion.$myVersion"
+    const val snapshotVersionName = "$majorVersion.$minorVersion.${patchVersion + 1}-SNAPSHOT"
+    const val artifactGroup = "io.gitcoins"
+}
+
+```
+
+## Github Action integration
+Since the library is hosted on GitHub anyway, we use GitHub Actions for running the publication Gradle tasks automatically. Whatever CI solution you’re using, setting up publication with it will consist of two main steps:
+- Getting your secret variables in place.
+- Invoking the two Gradle tasks.
+
+Your secret variables - for the list of these, look at the publishing script again - can simply go into Repository secrets (Add each of these by going to Settings -> Secrets within your GitHub repository). All the variables will be show in the [Actions secrets and variables](https://github.com/TheBestOrNothing/stream-chat-android/settings/secrets/actions).
+
+Now, let’s create the GitHub Actions workflow that will put all of this together. The configuration for this will go in the .github/workflows/publish.yml file of the repository. This publish workflow will run every time a new release is created in the repository (you can also change the triggers to run when a tag is created, for example).
+
+```js title="workflows/publish-beta.yml"
+
+name: PublishBeta
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+\.[0-9]+\.[0-9]+-beta[0-9]+'
+
+jobs:
+  publish:
+    name: Release build and publish beta
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3.1.0
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3.6.0
+        with:
+          distribution: adopt
+          java-version: 17
+      - name: Release build
+        # assembleRelease for all modules, excluding non-library modules: samples, docs
+        run: ./gradlew assembleRelease -x :stream-chat-android-ui-components-sample:assembleRelease -x :stream-chat-android-compose-sample:assembleRelease -x :stream-chat-android-docs:assembleRelease
+      - name: Source jar and dokka
+        run: ./gradlew androidSourcesJar javadocJar
+      - name: Publish to MavenCentral
+        run: ./gradlew publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+
+```
+
+## Your first release
+
+After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothing/stream-chat-android) and create new tag like v6.0.8-beta16, the workflow action will be triggered.
+
+```shell
+git tag -a v6.0.8-beta16 -m "v6.0.8.2 publish"
+git push origin v6.0.8-beta16
+```
+
+Go to [action page](https://github.com/TheBestOrNothing/stream-chat-android/actions) in the repository, lookup the detailed info in the running workflow. After the workflow run successfully, go to the [Nexus Repository Manager](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2) and in the menu on the left, select Staging repositories.Search or find your repository (search gitcoins in the Artifact Search), which has your group ID in its name. If you select it and look at the Content tab, you’ll see the files that have been published.
