@@ -3,7 +3,7 @@ id: publishing-android-libraries
 description: Create a Markdown Document
 ---
 
-# Publishing Android libraries
+# Publish Android libs to Nexus
 
 :::info[Useful links]
 
@@ -46,14 +46,15 @@ A lot of ground to cover - let’s go!
 
 We’ll be using the following tools for this tutorial. You are free to use alternatives, but these are our favourites, and they work well for us.
 
-- The command line gpg tool
 - GitHub as the public host of the library’s repository
-- GitHub Actions as the continuous integration solution
+- Registering a Sonatype account
+- The command line gpg tool
+
 
 For this article, we’ll assume that you already have your library developed, and have uploaded it to a public GitHub repository.
 We’ll use our very own Android Chat SDK in our examples. This SDK is made up of multiple artifacts, but for simplification, we’ll just talk about publishing the low-level networking client, which lives in the stream-chat-android-client module of the GitHub repository.
 
-## Registering a Sonatype account
+### Registering a Sonatype account
 
 First things first, you’ll need an account in the [Sonatype Jira](https://issues.sonatype.org/secure/Dashboard.jspa). Head over there and hit Sign up. Registration is straightforward, it just requires a username, an email, and a password.
 After you’ve logged in, you’ll need to open an issue, asking for access to the group ID that you’ll want to publish your project under. For us, based on our domain name (gitcoins.io), our group ID is io.gitcoins. If you own a domain, it’s best to choose the reversed version of that as your group ID. Otherwise, you’ll have to stick with having a GitHub-based group ID.
@@ -69,7 +70,7 @@ After choosing a language and an avatar, you’ll end up on this landing page - 
 
 Soon after opening it, your issue will get a comment telling you to verify that you own the domain corresponding to your group ID. To comply with this, add the required TXT record to your domain - how to do this will depend on where your domain is registered, but it should be a fairly simple task. Login to the [goDaddy](https://dcc.godaddy.com/control/portfolio/gitcoins.io/settings) to set the TXT record with the guide from [the issue created](https://issues.sonatype.org/browse/OSSRH-97587) in jira for Sonatype.
 
-## Generating a GPG key pair
+### Generating a GPG key pair
 
 As we eluded to earlier, artifacts published on MavenCentral have to be signed by their publishers. You’ll need a GPG key for this.
 
@@ -170,6 +171,14 @@ That’s a lot of work without touching your project, but the time has come to d
 - Configure the properties of the library you’re releasing.
 - Grab the necessary authentication details along with the private key you’ve just exported.
 
+Five variables will be used to sign and publish the artifacts after they’re built:
+
+- signing.keyId: the ID of the GPG key pair, the last eight characters of its fingerprint
+- signing.password: the passphrase of the key pair
+- signing.key: Generate gpg key with command `gpg --export-secret-keys --armor F207B5A1 > my.gpg`. F207B5A1 is last 8 characters in the public key, you can get public key by gpg --list-keys
+- osshrUsername and ossrhPassword: This is the token username and password, not the one used for logging into the UI. [MavenCentral Token](https://s01.oss.sonatype.org/#profile;User%20Token)
+- sonatypeStagingProfileId: Go to https://s01.oss.sonatype.org/ and log in. In the menu on the left, select Staging profiles, select your profile, and then look for the ID in the [URL](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2). The 638cedd9d39c2 is the sonatypeStagingProfileId.
+
 ### Root project Gradle configuration
 
 To easily automate publishing later, you'll use the gradle-nexus/publish-plugin tool. This has to be added in your project level (root) build.gradle file as a dependency.
@@ -177,6 +186,8 @@ To easily automate publishing later, you'll use the gradle-nexus/publish-plugin 
 You can do this either with a plugins block:
 
 ```js title="build.gradle"
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
+
 buildscript {
     repositories {
         ...
@@ -195,6 +206,7 @@ buildscript {
 Next, create a new file called publish-root.gradle in a new scripts folder inside your project. This will contain global configuration you need for publishing, grabbing input values for your scripts, and defining the MavenCentral repository.
 
 ```js title="scripts/publish-root.gradle"
+
 import io.getstream.chat.android.Configuration
 
 // Create variables with empty default values
@@ -204,7 +216,6 @@ ext["sonatypeStagingProfileId"] = ''
 ext["signing.keyId"] = ''
 ext["signing.password"] = ''
 ext["signing.key"] = ''
-ext["signing.secretKeyRingFile"] = ''
 ext["snapshot"] = ''
 
 File secretPropsFile = project.rootProject.file('local.properties')
@@ -215,8 +226,8 @@ if (secretPropsFile.exists()) {
     p.each { name, value -> ext[name] = value }
 } else {
     // Use system environment variables
-    ext["ossrhUsername"] = System.getenv('OSSRH_USERNAME')
-    ext["ossrhPassword"] = System.getenv('OSSRH_PASSWORD')
+    ext["ossrhUsername"] = System.getenv('OSSRH_TOKEN_USERNAME')
+    ext["ossrhPassword"] = System.getenv('OSSRH_TOKEN_PASSWORD')
     ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
     ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID')
     ext["signing.password"] = System.getenv('SIGNING_PASSWORD')
@@ -230,34 +241,39 @@ if (snapshot) {
     ext["rootVersionName"] = Configuration.versionName
 }
 
-// Set up Sonatype repository
+// The following makes the key available for publishing to Nexus
+// OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}
+// OSSRH_TOKEN_PASSWORD: ${{ secrets.OSSRH_TOKEN_PASSWORD }}
+// SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+// After making the github action secrets above available, you can try publish in the github workflow
+// ./gradlew publishToSonatype
+// ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+
 nexusPublishing {
     repositories {
+        //sonatype()
         sonatype {
-            /* Existing params here... */
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
 
+            version = rootVersionName
             stagingProfileId = sonatypeStagingProfileId
             username = ossrhUsername
             password = ossrhPassword
-            version = rootVersionName
         }
     }
+
+    // these are not strictly required. The default timeouts are set to 1 minute. But Sonatype can be really slow.
+    // If you get the error "java.net.SocketTimeoutException: timeout", these lines will help.
+    connectTimeout = Duration.ofMinutes(3)
+    clientTimeout = Duration.ofMinutes(3)
 }
 
 tasks.withType(dokkaHtmlMultiModule.getClass()) {
     includes.from("DokkaRoot.md")
 }
+
 ```
-
-The first three variables will be used to sign the artifacts after they’re built:
-
-- signing.keyId: the ID of the GPG key pair, the last eight characters of its fingerprint
-- signing.password: the passphrase of the key pair
-- signing.key: the base64 encoded private key you exported earlier
-- osshrUsername and ossrhPassword: are your account details for [MavenCentral](https://s01.oss.sonatype.org/)
-- sonatypeStagingProfileId: Go to https://s01.oss.sonatype.org/ and log in. In the menu on the left, select Staging profiles, select your profile, and then look for the ID in the [URL](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2). The 638cedd9d39c2 is the sonatypeStagingProfileId.
 
 :::tips
 
@@ -354,13 +370,29 @@ afterEvaluate {
     }
 }
 
-signing {
-    useInMemoryPgpKeys(
-            rootProject.ext["signing.keyId"],
-            rootProject.ext["signing.key"],
-            rootProject.ext["signing.password"],
-    )
-    sign publishing.publications
+// For signing you need to make signingKey and signingPassword available properties
+// SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+// SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+// After making the github action secrets above available, you can try publish in the github workflow
+// ./gradlew signMavenPublication
+//
+def hasSigningKey = rootProject.ext["signing.keyId"] || rootProject.ext["signing.key"]
+if(hasSigningKey) {
+    sign(project)
+}
+void sign(Project project) {
+    project.signing {
+        required { project.gradle.taskGraph.hasTask("publish") }
+        def signingKeyId = rootProject.ext["signing.keyId"]
+        def signingKey = rootProject.ext["signing.key"]
+        def signingPassword = rootProject.ext["signing.password"]
+        if (signingKeyId) {
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        } else if (signingKey) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
+        sign publishing.publications
+    }
 }
 ```
 
@@ -392,13 +424,13 @@ Your secret variables - for the list of these, look at the publishing script aga
 
 Now, let’s create the GitHub Actions workflow that will put all of this together. The configuration for this will go in the .github/workflows/publish.yml file of the repository. This publish workflow will run every time a new release is created in the repository (you can also change the triggers to run when a tag is created, for example).
 
-```js title="workflows/publish-beta.yml"
-name: PublishBeta
+```js title="workflows/publish-my.yml"
+name: PublishGitcoins
 
 on:
   push:
     tags:
-      - 'v[0-9]+\.[0-9]+\.[0-9]+-beta[0-9]+'
+      - '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
 
 jobs:
   publish:
@@ -420,9 +452,8 @@ jobs:
       - name: Publish to MavenCentral
         run: ./gradlew publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}
+          OSSRH_TOKEN_PASSWORD: ${{ secrets.OSSRH_TOKEN_PASSWORD }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
@@ -440,7 +471,7 @@ Go to [action page](https://github.com/TheBestOrNothing/stream-chat-android/acti
 
 ## Using the publish library
 
-### Create a New Android Project
+### Create new Project in Android studio
 
 To get started with the Jetpack Compose version of the Android Chat SDK, open Android Studio (Giraffe or newer) and create a new project.
 
