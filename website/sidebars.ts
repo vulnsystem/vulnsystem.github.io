@@ -55,7 +55,8 @@ const sidebars: SidebarsConfig = {
         id: 'stream/stream-getstreamio',
       },
       items: [
-        'stream/publishing-android-libraries',
+        'stream/publishing-android-libraries-nexus',
+        'stream/publishing-android-libraries-jitpack',
         'stream/debugging-with-ngrok',
         'stream/stream-feeds',
       ],
