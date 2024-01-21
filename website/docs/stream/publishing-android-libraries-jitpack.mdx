@@ -20,7 +20,7 @@ The simplest choice would be [JitPack](https://jitpack.io/), which is very easy 
 
 ## Release configuration
 
-The signing is madetory for jitpack, so the keyId, key and password is not requried. So the publish-module.gradle is useful for jitpack and nexus publishing.
+The signing is not mandatory for jitpack, so the keyId, key and password is not requried. So the publish-module.gradle is useful for jitpack and nexus publishing.
 
 ```js title="scripts/publish-module.gradle"
 apply plugin: 'maven-publish'
@@ -106,12 +106,10 @@ afterEvaluate {
     }
 }
 
-// For signing you need to make signingKey and signingPassword available properties
-// SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-// SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-// After making the github action secrets above available, you can try publish in the github workflow
-// ./gradlew signMavenPublication
-//
+// The signing is not mandatory for jitpack, so the keyId, key and password is not requried. 
+// If there are no  keyId, key and password env for signing in the jitpack, the sign function in the following will not work.
+// So the publish-module.gradle is worked well for both jitpack and nexus publishing.
+
 def hasSigningKey = rootProject.ext["signing.keyId"] || rootProject.ext["signing.key"]
 if(hasSigningKey) {
     sign(project)
@@ -151,81 +149,49 @@ object Configuration {
 }
 ```
 
-## Github Action integration
-Since the library is hosted on GitHub anyway, we use GitHub Actions for running the publication Gradle tasks automatically. Whatever CI solution you’re using, setting up publication with it will consist of two main steps:
-- Getting your secret variables in place.
-- Invoking the two Gradle tasks.
+## jitpack configuration
 
-Your secret variables - for the list of these, look at the publishing script again - can simply go into Repository secrets (Add each of these by going to Settings -> Secrets within your GitHub repository). All the variables will be show in the [Actions secrets and variables](https://github.com/TheBestOrNothing/stream-chat-android/settings/secrets/actions).
-
-Now, let’s create the GitHub Actions workflow that will put all of this together. The configuration for this will go in the .github/workflows/publish.yml file of the repository. This publish workflow will run every time a new release is created in the repository (you can also change the triggers to run when a tag is created, for example).
-
-```js title="workflows/publish-my.yml"
-name: PublishGitcoins
-
-on:
-  push:
-    tags:
-      - '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
-
-jobs:
-  publish:
-    name: Release build and publish beta
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3.1.0
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3.6.0
-        with:
-          distribution: adopt
-          java-version: 17
-      - name: Release build
-        # assembleRelease for all modules, excluding non-library modules: samples, docs
-        run: ./gradlew assembleRelease -x :stream-chat-android-ui-components-sample:assembleRelease -x :stream-chat-android-compose-sample:assembleRelease -x :stream-chat-android-docs:assembleRelease
-      - name: Source jar and dokka
-        run: ./gradlew androidSourcesJar javadocJar
-      - name: Publish to MavenCentral
-        run: ./gradlew publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
-        env:
-          OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}
-          OSSRH_TOKEN_PASSWORD: ${{ secrets.OSSRH_TOKEN_PASSWORD }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+Now, let’s create the jitpack.yml file in the repository as showed in the following. 
+```js title="jitpack.yml"
+jdk: openjdk17
+install:
+  - echo "Running a custom install command"
+  - ./gradlew clean -xtest -xlint assembleRelease -x :stream-chat-android-ui-components-sample:assembleRelease -x :stream-chat-android-compose-sample:assembleRelease -x :stream-chat-android-docs:assembleRelease publishReleasePublicationToMavenLocal
 ```
 
 ## Your first release
 
-After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothing/stream-chat-android) and create new tag like v6.0.8-beta16, the workflow action will be triggered.
+- After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothing/stream-chat-android) and then create the new tag with name which is same as `versionName` descript in the Version configuraiton.
+- Go to `https://jitpack.io/` and look up `wofwoof/stream-chat-android`
+- Click `Get it` button according to the new tag
+- The package will build and publish auto
 
-```shell
-git tag -a v6.0.8-beta16 -m "v6.0.8.2 publish"
-git push origin v6.0.8-beta16
-```
-Go to [action page](https://github.com/TheBestOrNothing/stream-chat-android/actions) in the repository, lookup the detailed info in the running workflow. After the workflow run successfully, go to the [Nexus Repository Manager](https://s01.oss.sonatype.org/#stagingProfiles;638cedd9d39c2) and in the menu on the left, select Staging repositories.Search or find your repository (search gitcoins in the Artifact Search), which has your group ID in its name. If you select it and look at the Content tab, you’ll see the files that have been published.
 
 ## Using the publish library
 
-### Create new Project in Android studio
-
-To get started with the Jetpack Compose version of the Android Chat SDK, open Android Studio (Giraffe or newer) and create a new project.
-
-- Select the Empty Activity template
-- Name the project ChatTutorial
-- Set the package name to com.example.chattutorial
-
-### Add Stream Chat Compose SDK
-Let's add the Stream Chat Compose SDK to the project's dependencies. **io.gitcoins:stream-chat-android-compose:6.0.8.2** and **io.gitcoins:stream-chat-android-offline:6.0.8.2** are coming from Nexus Repository which have been published according to this guide.
+- Add url `https://jitpack.io` in the repositories in the build.gradle file
+- Add dependency like `com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10`
 
 ```js title="build.gradle"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url uri('https://repo.maven.apache.org/maven2/') }
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
 
+    // Jitpack publish
+    implementation(com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10)
+    // Nexus publish from io.gitcoins
     implementation("io.gitcoins:stream-chat-android-compose:6.0.8.2")
     implementation("io.gitcoins:stream-chat-android-ui-utils:6.0.8.2")
     implementation("io.gitcoins:stream-chat-android-offline:6.0.8.2")
-
-    //implementation("io.getstream:stream-chat-android-compose:6.0.8")
-    //implementation("io.getstream:stream-chat-android-offline:6.0.8")
+    // Nexus publish from io.getstream
+    implementation("io.getstream:stream-chat-android-compose:6.0.8")
+    implementation("io.getstream:stream-chat-android-offline:6.0.8")
 }
 ```
