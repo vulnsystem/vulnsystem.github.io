@@ -3,187 +3,159 @@ id: rocketchat
 description: What is RocketChat
 ---
 
-# Installation
+# RocketChat Oauth
 
-```mdx-code-block
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-```
-
-Docusaurus consists of a set of npm [packages](https://github.com/facebook/docusaurus/tree/main/packages).
-
-:::tip
-
-Use the **[Fast Track](introduction.mdx#fast-track)** to understand Docusaurus in **5 minutes ⏱**!
-
-Use **[docusaurus.new](https://docusaurus.new)** to test Docusaurus immediately in your browser!
-
-:::
-
-## Requirements {#requirements}
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above (which can be checked by running `node -v`). You can use [nvm](https://github.com/nvm-sh/nvm) for managing multiple Node versions on a single machine installed.
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Scaffold project website {#scaffold-project-website}
-
-The easiest way to install Docusaurus is to use the command line tool that helps you scaffold a skeleton Docusaurus website. You can run this command anywhere in a new empty repository or within an existing repository, it will create a new directory containing the scaffolded files.
+Create a Markdown file, `greeting.md`, and place it under the `docs` directory.
 
 ```bash
-npx create-docusaurus@latest my-website classic
-```
-
-We recommend the `classic` template so that you can get started quickly, and it contains features found in Docusaurus 1. The `classic` template contains `@docusaurus/preset-classic` which includes standard documentation, a blog, custom pages, and a CSS framework (with dark mode support). You can get up and running extremely quickly with the classic template and customize things later on when you have gained more familiarity with Docusaurus.
-
-You can also use the template's TypeScript variant by passing the `--typescript` flag. See [TypeScript support](./typescript-support.mdx) for more information.
-
-```bash
-npx create-docusaurus@latest my-website classic --typescript
-```
-
-:::info Meta-Only
-
-If you are setting up a new Docusaurus website for a Meta open source project, run this command inside an internal repository, which comes with some useful Meta-specific defaults:
-
-```bash
-scarf static-docs-bootstrap
-```
-
-:::
-
-<details>
-  <summary>Alternative installation commands</summary>
-
-You can also initialize a new project using your preferred project manager:
-
-```bash npm2yarn
-npm init docusaurus
-```
-
-</details>
-
-Run `npx create-docusaurus@latest --help`, or check out its [API docs](./api/misc/create-docusaurus.mdx) for more information about all available flags.
-
-## Project structure {#project-structure}
-
-Assuming you chose the classic template and named your site `my-website`, you will see the following files generated under a new directory `my-website/`:
-
-```bash
-my-website
-├── blog
-│   ├── 2019-05-28-hola.md
-│   ├── 2019-05-29-hello-world.md
-│   └── 2020-05-30-welcome.md
+website # root directory of your site
 ├── docs
-│   ├── doc1.md
-│   ├── doc2.md
-│   ├── doc3.md
-│   └── mdx.md
+│   └── greeting.md
 ├── src
-│   ├── css
-│   │   └── custom.css
 │   └── pages
-│       ├── styles.module.css
-│       └── index.js
-├── static
-│   └── img
 ├── docusaurus.config.js
-├── package.json
-├── README.md
-├── sidebars.js
-└── yarn.lock
+├── ...
 ```
 
-### Project structure rundown {#project-structure-rundown}
+```md
+---
+description: Create a doc page with rich content.
+---
 
-- `/blog/` - Contains the blog Markdown files. You can delete the directory if you've disabled the blog plugin, or you can change its name after setting the `path` option. More details can be found in the [blog guide](blog.mdx)
-- `/docs/` - Contains the Markdown files for the docs. Customize the order of the docs sidebar in `sidebars.js`. You can delete the directory if you've disabled the docs plugin, or you can change its name after setting the `path` option. More details can be found in the [docs guide](./guides/docs/docs-introduction.mdx)
-- `/src/` - Non-documentation files like pages or custom React components. You don't have to strictly put your non-documentation files here, but putting them under a centralized directory makes it easier to specify in case you need to do some sort of linting/processing
-  - `/src/pages` - Any JSX/TSX/MDX file within this directory will be converted into a website page. More details can be found in the [pages guide](guides/creating-pages.mdx)
-- `/static/` - Static directory. Any contents inside here will be copied into the root of the final `build` directory
-- `/docusaurus.config.js` - A config file containing the site configuration. This is the equivalent of `siteConfig.js` in Docusaurus v1
-- `/package.json` - A Docusaurus website is a React app. You can install and use any npm packages you like in them
-- `/sidebars.js` - Used by the documentation to specify the order of documents in the sidebar
+# Smart contracts authorization
 
-### Monorepos {#monorepos}
+Are you ready to create the documentation site for your open source project?
 
-If you are using Docusaurus for documentation of an existing project, a monorepo may be the solution for you. Monorepos allow you to share dependencies between similar projects. For example, your website may use your local packages to showcase latest features instead of depending on a released version. Then, your contributors can update the docs as they implement features. An example monorepo folder structure is below:
+## Headers
 
-```bash
-my-monorepo
-├── package-a # Another package, your actual project
-│   ├── src
-│   └── package.json # Package A's dependencies
-├── website   # Docusaurus root
-│   ├── docs
-│   ├── src
-│   └── package.json # Docusaurus' dependencies
-├── package.json # Monorepo's shared dependencies
+will show up on the table of contents on the upper right
+
+So that your users will know what this page is all about without scrolling down or even without reading too much.
+
+## Only h2 and h3 will be in the TOC by default.
+
+You can configure the TOC heading levels either per-document or in the theme configuration.
+
+The headers are well-spaced so that the hierarchy is clear.
+
+- lists will help you
+- present the key points
+- that you want your users to remember
+  - and you may nest them
+    - multiple times
 ```
 
-In this case, you should run `npx create-docusaurus` within the `./my-monorepo` folder.
+:::note
 
-If you're using a hosting provider such as Netlify or Vercel, you will need to change the `Base directory` of the site to where your Docusaurus root is. In this case, that would be `./website`. Read more about configuring ignore commands in the [deployment docs](./deployment.mdx#deploying-to-netlify).
+All files prefixed with an underscore (`_`) under the `docs` directory are treated as "partial" pages and will be ignored by default.
 
-Read more about monorepos in the [Yarn documentation](https://yarnpkg.com/features/workspaces) (Yarn is not the only way to set up a monorepo, but it's a common solution), or checkout [Docusaurus](https://github.com/facebook/docusaurus) and [Jest](https://github.com/facebook/jest) for some real-world examples.
+Read more about [importing partial pages](../markdown-features/markdown-features-react.mdx#importing-markdown).
 
-## Running the development server {#running-the-development-server}
+:::
 
-To preview your changes as you edit the files, you can run a local development server that will serve your website and reflect the latest changes.
+## Doc front matter {#doc-front-matter}
 
-```bash npm2yarn
-cd my-website
-npm run start
-```
+The [front matter](../markdown-features/markdown-features-intro.mdx#front-matter) is used to provide additional metadata for your doc page. Front matter is optional—Docusaurus will be able to infer all necessary metadata without the front matter. For example, the [doc tags](#doc-tags) feature introduced below requires using front matter. For all possible fields, see [the API documentation](../../api/plugins/plugin-content-docs.mdx#markdown-front-matter).
 
-By default, a browser window will open at [`http://localhost:3000`](http://localhost:3000).
+## Doc tags {#doc-tags}
 
-Congratulations! You have just created your first Docusaurus site! Browse around the site to see what's available.
+Optionally, you can add tags to your doc pages, which introduces another dimension of categorization in addition to the [docs sidebar](./sidebar/index.mdx). Tags are passed in the front matter as a list of labels:
 
-## Build {#build}
-
-Docusaurus is a modern static website generator so we need to build the website into a directory of static contents and put it on a web server so that it can be viewed. To build the website:
-
-```bash npm2yarn
-npm run build
-```
-
-and contents will be generated within the `/build` directory, which can be copied to any static file hosting service like [GitHub pages](https://pages.github.com/), [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/). Check out the docs on [deployment](deployment.mdx) for more details.
-
-## Updating your Docusaurus version {#updating-your-docusaurus-version}
-
-There are many ways to update your Docusaurus version. One guaranteed way is to manually change the version number in `package.json` to the desired version. Note that all `@docusaurus/`-namespaced packages should be using the same version.
-
-import UpgradeGuide from '@site/src/components/UpgradeGuide';
-
-<UpgradeGuide />
-
-Then, in the directory containing `package.json`, run your package manager's install command:
-
-```bash npm2yarn
-npm install
-```
-
-To check that the update occurred successfully, run:
-
-```bash
-npx docusaurus --version
-```
-
-You should see the correct version as output.
-
-Alternatively, if you are using Yarn, you can do:
-
-```bash
-yarn add @docusaurus/core @docusaurus/preset-classic
+```md "your-doc-page.md"
+---
+id: doc-with-tags
+title: A doc with tags
+tags:
+  - Demo
+  - Getting started
+---
 ```
 
 :::tip
 
-Use new unreleased features of Docusaurus with the [`@canary` npm dist tag](/community/canary)
+Tags can also be declared with `tags: [Demo, Getting started]`.
+
+Read more about all the possible [Yaml array syntaxes](https://www.w3schools.io/file/yaml-arrays/).
 
 :::
 
-## Problems? {#problems}
+## Organizing folder structure {#organizing-folder-structure}
 
-Ask for help on [Stack Overflow](https://stackoverflow.com/questions/tagged/docusaurus), on our [GitHub repository](https://github.com/facebook/docusaurus), our [Discord server](https://discordapp.com/invite/docusaurus), or [Twitter](https://twitter.com/docusaurus).
+How the Markdown files are arranged under the `docs` folder can have multiple impacts on Docusaurus content generation. However, most of them can be decoupled from the file structure.
+
+### Document ID {#document-id}
+
+Every document has a unique `id`. By default, a document `id` is the name of the document (without the extension) relative to the root docs directory.
+
+For example, the ID of `greeting.md` is `greeting`, and the ID of `guide/hello.md` is `guide/hello`.
+
+```bash
+website # Root directory of your site
+└── docs
+   ├── greeting.md
+   └── guide
+      └── hello.md
+```
+
+However, the **last part** of the `id` can be defined by the user in the front matter. For example, if `guide/hello.md`'s content is defined as below, its final `id` is `guide/part1`.
+
+```md
+---
+id: part1
+---
+
+Lorem ipsum
+```
+
+The ID is used to refer to a document when hand-writing sidebars, or when using docs-related layout components or hooks.
+
+### Doc URLs {#doc-urls}
+
+By default, a document's URL location is its file path relative to the `docs` folder. Use the `slug` front matter to change a document's URL.
+
+For example, suppose your site structure looks like this:
+
+```bash
+website # Root directory of your site
+└── docs
+    └── guide
+        └── hello.md
+```
+
+By default `hello.md` will be available at `/docs/guide/hello`. You can change its URL location to `/docs/bonjour`:
+
+```md
+---
+slug: /bonjour
+---
+
+Lorem ipsum
+```
+
+`slug` will be appended to the doc plugin's `routeBasePath`, which is `/docs` by default. See [Docs-only mode](docs-introduction.mdx#docs-only-mode) for how to remove the `/docs` part from the URL.
+
+:::note
+
+It is possible to use:
+
+- absolute slugs: `slug: /mySlug`, `slug: /`...
+- relative slugs: `slug: mySlug`, `slug: ./../mySlug`...
+
+:::
+
+If you want a document to be available at the root, and have a path like `https://docusaurus.io/docs/`, you can use the slug front matter:
+
+```md
+---
+id: my-home-doc
+slug: /
+---
+
+Lorem ipsum
+```
+
+### Sidebars {#sidebars}
+
+When using [autogenerated sidebars](./sidebar/autogenerated.mdx), the file structure will determine the sidebar structure.
+
+Our recommendation for file system organization is: make your file system mirror the sidebar structure (so you don't need to handwrite your `sidebars.js` file), and use the `slug` front matter to customize URLs of each document.
