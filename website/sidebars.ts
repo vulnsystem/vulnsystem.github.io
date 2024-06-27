@@ -49,6 +49,18 @@ const sidebars: SidebarsConfig = {
    },
    {
       type: 'category',
+      label: 'RocketChat OAuth',
+      link: {
+        type: 'doc',
+        id: 'RocketChat/rocketchat',
+      },
+      items: [
+        'RocketChat/rocketchat-microsoft-authentication',
+        'RocketChat/rocketchat-metamask-authentication',
+      ],
+   },
+   {
+      type: 'category',
       label: 'Chat Messaging',
       link: {
         type: 'doc',
