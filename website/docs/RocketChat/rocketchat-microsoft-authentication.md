@@ -3,7 +3,7 @@ id: rocketchat-microsoft-authentication
 description: RocketChat and Microsoft Authentication
 ---
 
-# Installation
+# RocketChat + Microsoft Oauth
 
 ```mdx-code-block
 import Tabs from '@theme/Tabs';
