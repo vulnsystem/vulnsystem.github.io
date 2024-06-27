@@ -1,5 +1,5 @@
 ---
-id: rocket
+id: rocketchat
 description: What is RocketChat
 ---
 
