@@ -3,7 +3,7 @@ id: rocketchat-metamask-authentication
 description: RocketChat and MetaMask Authentication
 ---
 
-# Installation
+# RocketChat + MetaMask Oauth
 
 ```mdx-code-block
 import Tabs from '@theme/Tabs';
