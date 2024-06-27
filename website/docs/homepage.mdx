@@ -7,6 +7,66 @@ description: How to adapt home page quickly.
 How to configure the home page which loaded when `https://vulnsystem.github.io/` open?
 There are navbar, TopBanner, HeroBanner, and FeaturesContainer from top to the bottom in the home page.
 
+## SideBar
+The **SideBar** is in the top of home page. You can adapt the navbar content according to the following code in the [website/sidebars.ts](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/sidebars.ts)
+
+```js title="SideBar"
+const sidebars: SidebarsConfig = {
+  woofwoof: [
+    'introduction',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      link: {
+        type: 'generated-index',
+      },
+      collapsed: false,
+      items: [
+        'installation',
+        'tokengeneration',
+        'kafkaclients',
+        'restapis',
+        'streamclients',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Guides',
+      link: {
+        type: 'generated-index',
+        title: 'Docusaurus Guides',
+        description:
+          "Let's learn about the most important Docusaurus concepts!",
+        keywords: ['guides'],
+        image: '/img/docusaurus.png',
+      },
+      items: [
+        'guides/docs/guides-kafkasecurity',
+        'guides/docs/guides-kafkaclientsecurity',
+        'guides/docs/guides-kafkarestproxy',
+        'guides/docs/guides-kafkarestapis-tokengen',
+        'guides/docs/guides-kafkarestapis-authentication',
+        'guides/docs/guides-kafkarestapis-authorization',
+        'guides/docs/guides-kafkarestapis-producer',
+        'guides/docs/guides-kafkarestapis-comsumer',
+     ],
+   },
+   {
+      type: 'category',
+      label: 'Chat Messaging',
+      link: {
+        type: 'doc',
+        id: 'stream/stream-getstreamio',
+      },
+      items: [
+        'stream/publishing-android-libraries-nexus',
+        'stream/publishing-android-libraries-jitpack',
+        'stream/debugging-with-ngrok',
+        'stream/stream-feeds',
+      ],
+   },
+```
+
 ## NavBar
 The **navBar** is in the top of home page. You can adapt the navbar content according to the following code in the [website/docusaurus.config.ts](https://github.com/vulnsystem/vulnsystem.github.io/blob/main/website/docusaurus.config.ts)
 ```js title="NavBar"
