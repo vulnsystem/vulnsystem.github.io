@@ -1,5 +1,6 @@
 ---
-description: How to install Docusaurus locally, and start a Docusaurus site in no time.
+id: rocketchat-microsoft-authentication
+description: RocketChat and Microsoft Authentication
 ---
 
 # Installation
