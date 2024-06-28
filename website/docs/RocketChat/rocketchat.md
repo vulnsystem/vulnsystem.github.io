@@ -5,157 +5,92 @@ description: What is RocketChat
 
 # RocketChat Oauth
 
-Create a Markdown file, `greeting.md`, and place it under the `docs` directory.
+# Debugging with Ngrok
+
+Ngrok is a tool allows you to expose a port on your local machine to the internet, allowing you to receive and monitor incoming requests from external sources such as webhooks. This makes Ngrok a perfect fit for debugging webhook payloads that come from Stream Chat.
+
+## Installation
+
+Ngrok can be installed on ubuntu using apt with the following command:
 
 ```bash
-website # root directory of your site
-├── docs
-│   └── greeting.md
-├── src
-│   └── pages
-├── docusaurus.config.js
-├── ...
+$ sudo apt install ngrok
 ```
 
-```md
----
-description: Create a doc page with rich content.
----
+Alternatively, you can download Ngrok from their website at https://ngrok.com/. Once downloaded and unzipped, place the Ngrok executable in your applications directory.
 
-# Smart contracts authorization
+## Ngrok Configuration
 
-Are you ready to create the documentation site for your open source project?
-
-## Headers
-
-will show up on the table of contents on the upper right
-
-So that your users will know what this page is all about without scrolling down or even without reading too much.
-
-## Only h2 and h3 will be in the TOC by default.
-
-You can configure the TOC heading levels either per-document or in the theme configuration.
-
-The headers are well-spaced so that the hierarchy is clear.
-
-- lists will help you
-- present the key points
-- that you want your users to remember
-  - and you may nest them
-    - multiple times
-```
-
-:::note
-
-All files prefixed with an underscore (`_`) under the `docs` directory are treated as "partial" pages and will be ignored by default.
-
-Read more about [importing partial pages](../markdown-features/markdown-features-react.mdx#importing-markdown).
-
-:::
-
-## Doc front matter {#doc-front-matter}
-
-The [front matter](../markdown-features/markdown-features-intro.mdx#front-matter) is used to provide additional metadata for your doc page. Front matter is optional—Docusaurus will be able to infer all necessary metadata without the front matter. For example, the [doc tags](#doc-tags) feature introduced below requires using front matter. For all possible fields, see [the API documentation](../../api/plugins/plugin-content-docs.mdx#markdown-front-matter).
-
-## Doc tags {#doc-tags}
-
-Optionally, you can add tags to your doc pages, which introduces another dimension of categorization in addition to the [docs sidebar](./sidebar/index.mdx). Tags are passed in the front matter as a list of labels:
-
-```md "your-doc-page.md"
----
-id: doc-with-tags
-title: A doc with tags
-tags:
-  - Demo
-  - Getting started
----
-```
-
-:::tip
-
-Tags can also be declared with `tags: [Demo, Getting started]`.
-
-Read more about all the possible [Yaml array syntaxes](https://www.w3schools.io/file/yaml-arrays/).
-
-:::
-
-## Organizing folder structure {#organizing-folder-structure}
-
-How the Markdown files are arranged under the `docs` folder can have multiple impacts on Docusaurus content generation. However, most of them can be decoupled from the file structure.
-
-### Document ID {#document-id}
-
-Every document has a unique `id`. By default, a document `id` is the name of the document (without the extension) relative to the root docs directory.
-
-For example, the ID of `greeting.md` is `greeting`, and the ID of `guide/hello.md` is `guide/hello`.
+Now that Ngrok is properly installed, we'll need to spin it up on port 80 using the following command:
 
 ```bash
-website # Root directory of your site
-└── docs
-   ├── greeting.md
-   └── guide
-      └── hello.md
+$ ngrok http 80
 ```
+Once you execute the command listed above, Ngrok will spin up a "forwarding URL" that you can use to specify in the Stream Dashboard. 
+Now that your forwarding URL is available and online, copy the HTTPS forwarding URL as we will need it in the next step.
 
-However, the **last part** of the `id` can be defined by the user in the front matter. For example, if `guide/hello.md`'s content is defined as below, its final `id` is `guide/part1`.
+## Dashboard Configuration
 
-```md
----
-id: part1
----
+With your forwarding URL copied, login to your Stream Chat dashboard and scroll down to the webhook section. Activate the webhook and then paste your HTTPS forwarding URL in the webhook URL input . Click save to persist your settings. 
 
-Lorem ipsum
+## Receiving Events
+
+One of the many helpful tools that Ngrok provides is a web interface for inspecting incoming payloads. If you reference your terminal, you'll notice that there is a link for the "Web Interface" that runs on a local port – generally port 4040 if available. Navigate to http://localhost:4040 and you will see a dashboard for Ngrok.
+
+Next, fire off an event such as a message from your chat interface to receive and inspect the payload. Once sent, the webhook will forward the payload to your Ngrok server for inspection via a POST request.
+
+Ngrok will intermittently return a 502 Bad Gateway response. Please do not be alarmed by this as debugging with Ngrok is only for debugging purposes. In a production or staging environment, your server should return a 200 status code.
+Below is an example of the payload for a message:
+
+```js
+{
+    "cid": "messaging:MYH-HwwO",
+    "type": "message.new",
+    "message": {
+        "id": "2ecb4159e50b38cfb96e8ad2c4febd69-1ea9aa03-3edf-4491-8619-b34cabd4bcfc",
+        "text": "Hello!",
+        "html": "<p>Hello!</p>\n",
+        "type": "regular",
+        "user": {
+            "id": "2ecb4159e50b38cfb96e8ad2c4febd69",
+            "role": "admin",
+            "created_at": "2019-09-16T13:35:08.977932Z",
+            "updated_at": "2019-12-04T23:28:27.744384Z",
+            "last_active": "2019-12-04T23:28:27.743804Z",
+            "online": true,
+            "image": "https://ui-avatars.com/api/?name=nick_parsons&size=192&background=000000&color=6E7FFE&length=1",
+            "name": "nick_parsons",
+            "username": "nick_parsons"
+        },
+        "attachments": [],
+        "latest_reactions": [],
+        "own_reactions": [],
+        "reaction_counts": null,
+        "reaction_scores": {},
+        "reply_count": 0,
+        "created_at": "2019-12-04T23:28:35.561344Z",
+        "updated_at": "2019-12-04T23:28:35.561344Z",
+        "mentioned_users": []
+    },
+    "user": {
+        "id": "2ecb4159e50b38cfb96e8ad2c4febd69",
+        "role": "admin",
+        "created_at": "2019-09-16T13:35:08.977932Z",
+        "updated_at": "2019-12-04T23:28:27.744384Z",
+        "last_active": "2019-12-04T23:28:27.743804Z",
+        "online": true,
+        "channel_last_read_at": "1970-01-01T00:00:00Z",
+        "total_unread_count": 0,
+        "unread_channels": 0,
+        "unread_count": 0,
+        "image": "https://ui-avatars.com/api/?name=nick_parsons&size=192&background=000000&color=6E7FFE&length=1",
+        "name": "nick_parsons",
+        "username": "nick_parsons",
+        "channel_unread_count": 0
+    },
+    "watcher_count": 1,
+    "created_at": "2019-12-04T23:28:35.566646131Z",
+    "channel_type": "messaging",
+    "channel_id": "MYH-HwwO"
+}
 ```
-
-The ID is used to refer to a document when hand-writing sidebars, or when using docs-related layout components or hooks.
-
-### Doc URLs {#doc-urls}
-
-By default, a document's URL location is its file path relative to the `docs` folder. Use the `slug` front matter to change a document's URL.
-
-For example, suppose your site structure looks like this:
-
-```bash
-website # Root directory of your site
-└── docs
-    └── guide
-        └── hello.md
-```
-
-By default `hello.md` will be available at `/docs/guide/hello`. You can change its URL location to `/docs/bonjour`:
-
-```md
----
-slug: /bonjour
----
-
-Lorem ipsum
-```
-
-`slug` will be appended to the doc plugin's `routeBasePath`, which is `/docs` by default. See [Docs-only mode](docs-introduction.mdx#docs-only-mode) for how to remove the `/docs` part from the URL.
-
-:::note
-
-It is possible to use:
-
-- absolute slugs: `slug: /mySlug`, `slug: /`...
-- relative slugs: `slug: mySlug`, `slug: ./../mySlug`...
-
-:::
-
-If you want a document to be available at the root, and have a path like `https://docusaurus.io/docs/`, you can use the slug front matter:
-
-```md
----
-id: my-home-doc
-slug: /
----
-
-Lorem ipsum
-```
-
-### Sidebars {#sidebars}
-
-When using [autogenerated sidebars](./sidebar/autogenerated.mdx), the file structure will determine the sidebar structure.
-
-Our recommendation for file system organization is: make your file system mirror the sidebar structure (so you don't need to handwrite your `sidebars.js` file), and use the `slug` front matter to customize URLs of each document.
