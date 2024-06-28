@@ -52,7 +52,7 @@ const sidebars: SidebarsConfig = {
       label: 'RocketChat Oauth',
       link: {
         type: 'doc',
-        id: 'rocketchat/stream-getstreamio',
+        id: 'rocketchat/rocketchat-oauth',
       },
       items: [
         'rocketchat/publishing-android-libraries-nexus',
