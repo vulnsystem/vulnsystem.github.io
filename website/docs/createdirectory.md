@@ -2,7 +2,7 @@
 description: How to create new directory.
 ---
 
-# Create an new directory
+# Directory Creation 
 
 How to create new directory step by step? Although it is relatively simple, after a long time, you may not remember how to operate it. Following these steps can quickly create directories and files within directories.
 The main idea is to copy the previously created directory and content, and then make revisions.
