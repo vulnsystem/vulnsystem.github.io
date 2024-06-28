@@ -49,6 +49,20 @@ const sidebars: SidebarsConfig = {
    },
    {
       type: 'category',
+      label: 'RocketChat Oauth',
+      link: {
+        type: 'doc',
+        id: 'rocketchat/stream-getstreamio',
+      },
+      items: [
+        'rocketchat/publishing-android-libraries-nexus',
+        'rocketchat/publishing-android-libraries-jitpack',
+        'rocketchat/debugging-with-ngrok',
+        'rocketchat/stream-feeds',
+      ],
+   },
+   {
+      type: 'category',
       label: 'Chat Messaging',
       link: {
         type: 'doc',

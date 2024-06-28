@@ -1,0 +1,197 @@
+---
+id: publishing-android-libraries-jitpack
+description: Create a Markdown Document
+---
+
+# Publish Android libs to Jitpack
+
+:::info[Useful links]
+
+[`Publishing Android libraries to Jitpack`](https://jitpack.io/) https://jitpack.io/
+
+:::
+
+Creating a great library is hard work. Coming up with the idea, implementing it, making sure you have a nice, stable public API that you control carefully and maintain… That’s already lots to do.
+
+After all that, you need to make your library available to the public. Technically, you could distribute the .aar file any way you want, but the norm is publishing it to a publicly available Maven repository. It’s a good idea to use one of the well-established repositories that people are already likely to have in their projects, to make getting started with your library as easy as possible.
+
+The simplest choice would be [JitPack](https://jitpack.io/), which is very easy to get started with. All you have to do is publish your project on GitHub, and JitPack should be able to build and distribute it immediately. If you’re new to libraries, this is a great choice for getting your code out there.
+
+
+## Release configuration
+
+The signing is not mandatory for jitpack, so the keyId, key and password is not requried. So the publish-module.gradle is useful for jitpack and nexus publishing.
+
+```js title="scripts/publish-module.gradle"
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'org.jetbrains.dokka'
+
+tasks.register('androidSourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        from android.sourceSets.main.java.srcDirs
+        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
+}
+
+tasks.withType(dokkaHtmlPartial.getClass()).configureEach {
+    pluginsMapConfiguration.set(
+            ["org.jetbrains.dokka.base.DokkaBase": """{ "separateInheritedMembers": true}"""]
+    )
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives javadocJar
+}
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                tasks.named("generateMetadataFileForReleasePublication").configure { dependsOn("androidSourcesJar") }
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    from components.java
+                }
+
+                artifact javadocJar
+
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'Stream Chat official Android SDK'
+                    url = 'https://github.com/thebestornothing/stream-chat-android'
+                    licenses {
+                        license {
+                            name = 'Stream License'
+                            url = 'https://github.com/thebestornothing/stream-chat-android/blob/main/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'leandroBorgesFerreira'
+                            name = 'Leandro Borges Ferreira'
+                            email = 'leandro@getstream.io'
+                        }
+                        developer {
+                            id = 'bychkovdmitry'
+                            name = 'Dmitrii Bychkov'
+                            email = 'dmitrii@getstream.io'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/thebestornothing/stream-chat-android.git'
+                        developerConnection = 'scm:git:ssh://github.com/thebestornothing/stream-chat-android.git'
+                        url = 'https://github.com/thebestornothing/stream-chat-android/tree/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
+// The signing is not mandatory for jitpack, so the keyId, key and password is not requried. 
+// If there are no  keyId, key and password env for signing in the jitpack, the sign function in the following will not work.
+// So the publish-module.gradle is worked well for both jitpack and nexus publishing.
+
+def hasSigningKey = rootProject.ext["signing.keyId"] || rootProject.ext["signing.key"]
+if(hasSigningKey) {
+    sign(project)
+}
+void sign(Project project) {
+    project.signing {
+        required { project.gradle.taskGraph.hasTask("publish") }
+        def signingKeyId = rootProject.ext["signing.keyId"]
+        def signingKey = rootProject.ext["signing.key"]
+        def signingPassword = rootProject.ext["signing.password"]
+        if (signingKeyId) {
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        } else if (signingKey) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
+        sign publishing.publications
+    }
+}
+```
+
+## Version configuraiton
+
+Finally see the group ID, artifact ID, and version being set, so that the publication script can make use of them. Then, the script itself is applied. This is all the code you need to add per-module if you are publishing your library in multiple artifacts, everything else is done by the common script.
+```js title="buildSrc/Configuration.kt"
+object Configuration {
+    const val compileSdk = 34
+    const val targetSdk = 34
+    const val sampleTargetSdk = 34
+    const val minSdk = 21
+    const val majorVersion = 6
+    const val minorVersion = 0
+    const val patchVersion = 8
+    const val myVersion = 2
+    const val versionName = "$majorVersion.$minorVersion.$patchVersion.$myVersion"
+    const val snapshotVersionName = "$majorVersion.$minorVersion.${patchVersion + 1}-SNAPSHOT"
+    const val artifactGroup = "io.gitcoins"
+}
+```
+
+## jitpack configuration
+
+Now, let’s create the jitpack.yml file in the repository as showed in the following. 
+```js title="jitpack.yml"
+jdk: openjdk17
+install:
+  - echo "Running a custom install command"
+  - ./gradlew clean -xtest -xlint assembleRelease -x :stream-chat-android-ui-components-sample:assembleRelease -x :stream-chat-android-compose-sample:assembleRelease -x :stream-chat-android-docs:assembleRelease publishReleasePublicationToMavenLocal
+```
+
+## Your first release
+
+- After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothing/stream-chat-android) and then create the new tag with name which is same as `versionName` descript in the Version configuraiton.
+- Go to `https://jitpack.io/` and look up `wofwoof/stream-chat-android`
+- Click `Get it` button according to the new tag
+- The package will build and publish auto
+
+
+## Using the publish library
+
+- Add url `https://jitpack.io` in the repositories in the build.gradle file
+- Add dependency like `com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10`
+
+```js title="build.gradle"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url uri('https://repo.maven.apache.org/maven2/') }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+
+    // Jitpack publish
+    implementation(com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10)
+    // Nexus publish from io.gitcoins
+    implementation("io.gitcoins:stream-chat-android-compose:6.0.8.2")
+    implementation("io.gitcoins:stream-chat-android-ui-utils:6.0.8.2")
+    implementation("io.gitcoins:stream-chat-android-offline:6.0.8.2")
+    // Nexus publish from io.getstream
+    implementation("io.getstream:stream-chat-android-compose:6.0.8")
+    implementation("io.getstream:stream-chat-android-offline:6.0.8")
+}
+```
