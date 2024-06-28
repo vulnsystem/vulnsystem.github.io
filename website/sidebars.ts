@@ -90,6 +90,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'homepage',
         'docustips',
+        'createdirectory',
       ],
     },
   ],
