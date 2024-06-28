@@ -5,8 +5,6 @@ description: What is RocketChat
 
 # RocketChat Oauth
 
-# Debugging with Ngrok
-
 Ngrok is a tool allows you to expose a port on your local machine to the internet, allowing you to receive and monitor incoming requests from external sources such as webhooks. This makes Ngrok a perfect fit for debugging webhook payloads that come from Stream Chat.
 
 ## Installation
