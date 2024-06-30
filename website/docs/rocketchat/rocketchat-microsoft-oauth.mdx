@@ -45,6 +45,7 @@ Prerequisites:
 - On your new app's page, go to the Certificates and Secret tab to create a New client secret.
 
 ## Create Custom O365 OAuth in RocketChat
+
 To create a custom authentication method in your Rocket.Chat workspace:
 
 - Navigate to Administration > Workspace > Settings > OAuth.
@@ -55,55 +56,6 @@ To create a custom authentication method in your Rocket.Chat workspace:
 
 - You will also need to fill in other configuration fields.
 
-## Configure Custom O365 OAuth
-In your workspace, set the following fields as per your requirements.
 
-OAuth server configuration fields:
-
-- Enable: Set to true to enable this OAuth integration
-
-- URL: https://login.microsoftonline.com/<tenant ID>
-
-- Token Path: /oauth2/token
-
-- Token Sent Via: Select Header
-
-- Identity Token Sent Via: Select Header
-
-- Identity Path: /openid/userinfo
-
-- Authorize Path: /oauth2/authorize
-
-- Scope: openid profile email
-
-- Param Name for access token: access_token
-
-- Id: <Your Azure AD Application (client) ID>
-
-- Secret: <Your Azure AD client secret value>
-
-- Login style: Select the login style as Popup or Redirect.
-
-- Button Text: Enter some text to display on the button. For example, Login via Microsoft.
-
-- Key Field: Username
-
-- Username field: given_name
-
-- Email field: unique_name
-
-- Name field: family_name
-
-- Merge Users: True
-
-- Merge Users From Distinct Services: True
-
-- Show Button in Login page: True
-
-- Click Save changes.
-
-After saving, you will find the O365 Oauth button on the login and signup page.
-
-Simply sign in to your Office account to authenticate!
 
 
