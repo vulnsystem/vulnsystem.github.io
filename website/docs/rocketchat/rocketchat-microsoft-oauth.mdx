@@ -13,191 +13,156 @@ description: Microsoft identity platform and OAuth 2.0 authorization code flow
 :::
 
 
-## Protocol details
+## Microsoft OAuth Protocol details
 
 The OAuth 2.0 authorization code flow is described in section [`4.1 of the OAuth 2.0 specification`](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1). Apps using the OAuth 2.0 authorization code flow acquire an access_token to include in requests to resources protected by the Microsoft identity platform (typically APIs). Apps can also request new ID and access tokens for previously authenticated entities by using a refresh mechanism.
 
+<p align="center">
 ![](/img/rocketchat/Microsoft-authorization-code-flow.svg)
+</p>
 
+## Microsoft Oauth Prerequisites
 
+Apart from the OAuth methods that Rocket.Chat provides for user authentication, you can also choose to set up a custom OAuth method.
 
-## RocketChat Oauth configuration
+This guide shows how you can set up a custom OAuth integration between Microsoft accounts and Rocket.Chat. This is achieved with the use of Microsoft Entra ID (formerly called Azure Active Directory), which is an identity service by Microsoft that provides single sign-on and other authentication methods. You can also define conditional access policies and role-based permissions.
 
+Prerequisites: 
+1. An account on the Azure portal.
 
-## Release configuration
+2. An Azure Active Directory app.
 
-The signing is not mandatory for jitpack, so the keyId, key and password is not requried. So the publish-module.gradle is useful for jitpack and nexus publishing.
+3. An application ID and client secret.
 
-```js title="scripts/publish-module.gradle"
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'org.jetbrains.dokka'
+- If you don't have an app, log in to the Azure Portal and navigate to the Microsoft Entra ID tab.
 
-tasks.register('androidSourcesJar', Jar) {
-    archiveClassifier.set('sources')
-    if (project.plugins.findPlugin("com.android.library")) {
-        from android.sourceSets.main.java.srcDirs
-        from android.sourceSets.main.kotlin.srcDirs
-    } else {
-        from sourceSets.main.java.srcDirs
-        from sourceSets.main.kotlin.srcDirs
-    }
-}
+- Create a new App Registration.
 
-tasks.withType(dokkaHtmlPartial.getClass()).configureEach {
-    pluginsMapConfiguration.set(
-            ["org.jetbrains.dokka.base.DokkaBase": """{ "separateInheritedMembers": true}"""]
-    )
-}
+- Fill in the details. You will get the redirect URI from your Rocker.Chat workspace when you Create Custom O365 OAuth.
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    archiveClassifier.set('javadoc')
-    from dokkaJavadoc.outputDirectory
-}
+- After registering your new app, take note of Application (client) ID. It will be needed to configure the integration later.
 
-artifacts {
-    archives androidSourcesJar
-    archives javadocJar
-}
+- On your new app's page, go to the Certificates and Secret tab to create a New client secret.
 
-group = PUBLISH_GROUP_ID
-version = PUBLISH_VERSION
+## Create Custom O365 OAuth in RocketChat
+To create a custom authentication method in your Rocket.Chat workspace:
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                tasks.named("generateMetadataFileForReleasePublication").configure { dependsOn("androidSourcesJar") }
-                groupId PUBLISH_GROUP_ID
-                artifactId PUBLISH_ARTIFACT_ID
-                version PUBLISH_VERSION
-                if (project.plugins.findPlugin("com.android.library")) {
-                    from components.release
-                } else {
-                    from components.java
-                }
+- Navigate to Administration > Workspace > Settings > OAuth.
 
-                artifact javadocJar
+- Click on Custom OAuth and set the new OAuth integration name.
 
-                pom {
-                    name = PUBLISH_ARTIFACT_ID
-                    description = 'Stream Chat official Android SDK'
-                    url = 'https://github.com/thebestornothing/stream-chat-android'
-                    licenses {
-                        license {
-                            name = 'Stream License'
-                            url = 'https://github.com/thebestornothing/stream-chat-android/blob/main/LICENSE'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'leandroBorgesFerreira'
-                            name = 'Leandro Borges Ferreira'
-                            email = 'leandro@getstream.io'
-                        }
-                        developer {
-                            id = 'bychkovdmitry'
-                            name = 'Dmitrii Bychkov'
-                            email = 'dmitrii@getstream.io'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git:github.com/thebestornothing/stream-chat-android.git'
-                        developerConnection = 'scm:git:ssh://github.com/thebestornothing/stream-chat-android.git'
-                        url = 'https://github.com/thebestornothing/stream-chat-android/tree/main'
-                    }
-                }
-            }
-        }
-    }
-}
+- After creating the new integration, you are given the Callback URL. For example, https://<your-domain>/_oauth/365OAuth. Provide this as the redirect URI when you are creating your Azure app.
 
-// The signing is not mandatory for jitpack, so the keyId, key and password is not requried. 
-// If there are no  keyId, key and password env for signing in the jitpack, the sign function in the following will not work.
-// So the publish-module.gradle is worked well for both jitpack and nexus publishing.
+- You will also need to fill in other configuration fields.
 
-def hasSigningKey = rootProject.ext["signing.keyId"] || rootProject.ext["signing.key"]
-if(hasSigningKey) {
-    sign(project)
-}
-void sign(Project project) {
-    project.signing {
-        required { project.gradle.taskGraph.hasTask("publish") }
-        def signingKeyId = rootProject.ext["signing.keyId"]
-        def signingKey = rootProject.ext["signing.key"]
-        def signingPassword = rootProject.ext["signing.password"]
-        if (signingKeyId) {
-            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        } else if (signingKey) {
-            useInMemoryPgpKeys(signingKey, signingPassword)
-        }
-        sign publishing.publications
-    }
+## Configure Custom O365 OAuth
+In your workspace, set the following fields as per your requirements.
+
+OAuth server configuration fields:
+
+- Enable: Set to true to enable this OAuth integration
+
+- URL: https://login.microsoftonline.com/<tenant ID>
+
+- Token Path: /oauth2/token
+
+- Token Sent Via: Select Header
+
+- Identity Token Sent Via: Select Header
+
+- Identity Path: /openid/userinfo
+
+- Authorize Path: /oauth2/authorize
+
+- Scope: openid profile email
+
+- Param Name for access token: access_token
+
+- Id: <Your Azure AD Application (client) ID>
+
+- Secret: <Your Azure AD client secret value>
+
+- Login style: Select the login style as Popup or Redirect.
+
+- Button Text: Enter some text to display on the button. For example, Login via Microsoft.
+
+- Key Field: Username
+
+- Username field: given_name
+
+- Email field: unique_name
+
+- Name field: family_name
+
+- Merge Users: True
+
+- Merge Users From Distinct Services: True
+
+- Show Button in Login page: True
+
+- Click Save changes.
+
+After saving, you will find the O365 Oauth button on the login and signup page.
+
+Simply sign in to your Office account to authenticate!
+
+## Notice and Warning
+
+:::info warning and notice
+
+The configuration of custom Microsoft authentication from Rocketchat does not work, mainly due to the lack of information such as Key, Username, and Username fields.
+How to configure these fields, depend on the identity info return fetch from **identity path** which defined in the RocketChat oauth configuration. The following is identity info example from Microsoft identity platform web API. In this context, the user named 'Forrest' have been defined before using oauth, so the Key Field must be Username and Username field must be given_name. If you want use email as Key Field, then the Email field must be unique_name or upn.  
+
+:::
+
+```js
+Identity info {
+  amr: '["pwd","mfa"]',
+  family_name: 'Gump',
+  given_name: 'Forrest',
+  ipaddr: '223.104.42.87',
+  name: 'Forrest Gump',
+  oid: '90f7596b-88b6-4768-8204-8c476a73fe25',
+  rh: '0.AbcAqYXm1SM-2UKe-hXMXBzn2xNWhOMxA8BJnxH7amNCQtL8APU.',
+  sub: 'KGceLH-HoENIN5H4jVwwaLI2rtpH-S2CTnJCHA0y0ak',
+  tid: 'd5e685a9-3e23-42d9-9efa-15cc5c1ce7db',
+  unique_name: 'ForrestGump@Gitcoins.onmicrosoft.com',
+  upn: 'ForrestGump@Gitcoins.onmicrosoft.com',
+  uti: 'H1zdM7Pmbk2z9qeOOQUsAQ',
+  ver: '1.0'
 }
 ```
 
-## Version configuraiton
+## Code analysis
 
-Finally see the group ID, artifact ID, and version being set, so that the publication script can make use of them. Then, the script itself is applied. This is all the code you need to add per-module if you are publishing your library in multiple artifacts, everything else is done by the common script.
-```js title="buildSrc/Configuration.kt"
-object Configuration {
-    const val compileSdk = 34
-    const val targetSdk = 34
-    const val sampleTargetSdk = 34
-    const val minSdk = 21
-    const val majorVersion = 6
-    const val minorVersion = 0
-    const val patchVersion = 8
-    const val myVersion = 2
-    const val versionName = "$majorVersion.$minorVersion.$patchVersion.$myVersion"
-    const val snapshotVersionName = "$majorVersion.$minorVersion.${patchVersion + 1}-SNAPSHOT"
-    const val artifactGroup = "io.gitcoins"
-}
-```
+The following code is how the RocketChat fecth the identity info from Microsoft identity platform web API. The request URL is https://login.microsoftonline.com/d5e685a9-3e23-42d9-9efa-15cc8c2ce7db/openid/userinfo, then fecth the userinfo(identity info) with access_token in the headers.  
 
-## jitpack configuration
+```js title="Rocket.Chat/apps/meteor/app/custom-oauth/server/custom_oauth_server.js"
+async getIdentity(accessToken) {
+		const params = {};
+		const headers = {
+			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+			'Accept': 'application/json',
+		};
 
-Now, let’s create the jitpack.yml file in the repository as showed in the following. 
-```js title="jitpack.yml"
-jdk: openjdk17
-install:
-  - echo "Running a custom install command"
-  - ./gradlew clean -xtest -xlint assembleRelease -x :stream-chat-android-ui-components-sample:assembleRelease -x :stream-chat-android-compose-sample:assembleRelease -x :stream-chat-android-docs:assembleRelease publishReleasePublicationToMavenLocal
-```
+		if (this.identityTokenSentVia === 'header') {
+			headers.Authorization = `Bearer ${accessToken}`;
+		} else {
+			params[this.accessTokenParam] = accessToken;
+		}
 
-## Your first release
-
-- After adapt the code of [stream-chat-android](https://github.com/TheBestOrNothing/stream-chat-android) and then create the new tag with name which is same as `versionName` descript in the Version configuraiton.
-- Go to `https://jitpack.io/` and look up `wofwoof/stream-chat-android`
-- Click `Get it` button according to the new tag
-- The package will build and publish auto
-
-
-## Using the publish library
-
-- Add url `https://jitpack.io` in the repositories in the build.gradle file
-- Add dependency like `com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10`
-
-```js title="build.gradle"
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "https://plugins.gradle.org/m2/" }
-    maven { url uri('https://repo.maven.apache.org/maven2/') }
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-
-    // Jitpack publish
-    implementation(com.github.wofwoof.stream-chat-android:stream-chat-android-client:6.0.12.10)
-    // Nexus publish from io.gitcoins
-    implementation("io.gitcoins:stream-chat-android-compose:6.0.8.2")
-    implementation("io.gitcoins:stream-chat-android-ui-utils:6.0.8.2")
-    implementation("io.gitcoins:stream-chat-android-offline:6.0.8.2")
-    // Nexus publish from io.getstream
-    implementation("io.getstream:stream-chat-android-compose:6.0.8")
-    implementation("io.getstream:stream-chat-android-offline:6.0.8")
-}
+    // highlight-start
+		try {
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
+			if (!request.ok) {
+				throw new Error(request.statusText);
+			}
+			const response = await request.json();
+    // highlight-end
+			return this.normalizeIdentity(response);
+		} catch (err) {
+			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
+			throw _.extend(error, { response: err.response });
+		}
+	}
 ```
