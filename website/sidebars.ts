@@ -56,7 +56,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'rocketchat/rocketchat-oauth-process',
-        'rocketchat/publishing-android-libraries-jitpack',
+        'rocketchat/rocketchat-microsoft-oauth',
         'rocketchat/debugging-with-ngrok',
         'rocketchat/stream-feeds',
       ],
