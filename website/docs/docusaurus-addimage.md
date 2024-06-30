@@ -26,5 +26,12 @@ Upload the image files like png ang svg in the website/static/img/rocketchat. Op
 
 ```
 
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
 
 
