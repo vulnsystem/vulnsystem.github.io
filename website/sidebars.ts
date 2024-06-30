@@ -86,11 +86,12 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Docusaurus',
-      link: {type: 'doc', id: 'quickstart'},
+      link: {type: 'doc', id: 'docusaurus-quickstart'},
       items: [
-        'homepage',
-        'docustips',
-        'createdirectory',
+        'docusaurus-homepage',
+        'docusaurus-docustips',
+        'docusaurus-createdirectory',
+        'docusaurus-addimage',
       ],
     },
   ],
