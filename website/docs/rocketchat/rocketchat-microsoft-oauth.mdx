@@ -108,14 +108,14 @@ Simply sign in to your Office account to authenticate!
 
 ## Notice and Warning
 
-:::info warning and notice
+:::info
 
 The configuration of custom Microsoft authentication from Rocketchat does not work, mainly due to the lack of information such as Key, Username, and Username fields.
 How to configure these fields, depend on the identity info return fetch from **identity path** which defined in the RocketChat oauth configuration. The following is identity info example from Microsoft identity platform web API. In this context, the user named 'Forrest' have been defined before using oauth, so the Key Field must be Username and Username field must be given_name. If you want use email as Key Field, then the Email field must be unique_name or upn.  
 
 :::
 
-```js
+```
 Identity info {
   amr: '["pwd","mfa"]',
   family_name: 'Gump',
