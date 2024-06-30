@@ -2,19 +2,26 @@
 description: Microsoft identity platform and OAuth 2.0 authorization code flow
 ---
 
-# Authorization with Microsoft code flow
+# Auth with Microsoft code flow
 
 :::info[Useful links]
 
-[`Publishing Android libraries to Jitpack`](https://jitpack.io/) https://jitpack.io/
+[`The OAuth 2.0 Authorization Framework`](https://datatracker.ietf.org/doc/html/rfc6749)
+
+[`Microsoft identity platform and OAuth 2.0 authorization code flow`](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
 
 :::
 
-Creating a great library is hard work. Coming up with the idea, implementing it, making sure you have a nice, stable public API that you control carefully and maintain… That’s already lots to do.
 
-After all that, you need to make your library available to the public. Technically, you could distribute the .aar file any way you want, but the norm is publishing it to a publicly available Maven repository. It’s a good idea to use one of the well-established repositories that people are already likely to have in their projects, to make getting started with your library as easy as possible.
+## Protocol details
 
-The simplest choice would be [JitPack](https://jitpack.io/), which is very easy to get started with. All you have to do is publish your project on GitHub, and JitPack should be able to build and distribute it immediately. If you’re new to libraries, this is a great choice for getting your code out there.
+The OAuth 2.0 authorization code flow is described in section [`4.1 of the OAuth 2.0 specification`](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1). Apps using the OAuth 2.0 authorization code flow acquire an access_token to include in requests to resources protected by the Microsoft identity platform (typically APIs). Apps can also request new ID and access tokens for previously authenticated entities by using a refresh mechanism.
+
+![](/img/rocketchat/Microsoft-authorization-code-flow.svg)
+
+
+
+## RocketChat Oauth configuration
 
 
 ## Release configuration
