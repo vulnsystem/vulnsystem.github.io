@@ -34,4 +34,27 @@ graph TD;
     C-->D;
 ```
 
+```mermaid
+
+sequenceDiagram
+    participant User
+    participant Application
+    participant MicrosoftIdentityPlatform as Microsoft Identity Platform
+    participant ResourceServer as Resource Server
+
+    User->>Application: Navigate to the application
+    Application->>MicrosoftIdentityPlatform: Redirect to Microsoft for authentication
+    MicrosoftIdentityPlatform->>User: User authenticates and consents
+    User->>MicrosoftIdentityPlatform: Authentication and consent response
+    MicrosoftIdentityPlatform->>Application: Redirect back with authorization code
+    Application->>MicrosoftIdentityPlatform: Request access token with authorization code
+    MicrosoftIdentityPlatform->>Application: Issue access token
+    Application->>ResourceServer: Access resources with access token
+    activate ResourceServer
+    ResourceServer->>Application: Resource response
+    Note right of ResourceServer: Activation during resource access
+    deactivate ResourceServer
+
+```
+
 
