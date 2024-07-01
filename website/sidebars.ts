@@ -92,6 +92,7 @@ const sidebars: SidebarsConfig = {
         'docusaurus-docustips',
         'docusaurus-createdirectory',
         'docusaurus-addimage',
+        'docusaurus-diagrams',
       ],
     },
   ],
