@@ -143,4 +143,35 @@ sequenceDiagram
 ```
 
 
+```mermaid
+
+sequenceDiagram
+    participant RocketChatClient as RocketChat Client
+    participant Oauth2Authorize as Oauth2 Authorize
+    participant Oauth2Token as Oauth2 Token
+    participant ResourceServer as Identity
+    participant RocketChatServer as RocketChat Server
+
+    activate RocketChatServer
+    Note right of RocketChatServer: Oauth Configure
+    RocketChatClient->>RocketChatServer: Home page request
+    RocketChatServer->>RocketChatClient: Response contain Oauth2 authorize path, redirect uri, response type.
+
+    RocketChatClient->>Oauth2Authorize: Generate credentialToken and request code
+    Oauth2Authorize->>RocketChatClient: Retrun an authorization code
+    RocketChatClient->>Oauth2Token: Request Oauth token by authorization code
+    Oauth2Token->>RocketChatClient: Return an access_token and a refresh_token
+
+    RocketChatClient->>ResourceServer: Call web API with access_token in authorization header
+    ResourceServer->>RocketChatClient: Return identity data to RocketChat client
+
+    RocketChatClient->>RocketChatServer: Login request to RocketChat server
+    activate RocketChatServer
+    RocketChatServer->>RocketChatClient: Resource response
+    Note right of RocketChatServer: Activation during resource access
+    deactivate RocketChatServer
+
+```
+
+
 
