@@ -15,31 +15,35 @@ description: The process of rocketchat oauth
 ```mermaid
 sequenceDiagram
   participant RocketChatClient as RocketChat Client
-  box transparent Identity Authorization Platform
   participant Oauth2Authorize as Oauth2 Authorize
   participant Oauth2Token as Oauth2 Token
   participant ResourceServer as Identity
-  end
   participant RocketChatServer as RocketChat Server
 
-  Note right of RocketChatServer: Oauth Configure
+  Note right of RocketChatServer: RocketChatServer Oauth configuration
   RocketChatClient ->> RocketChatServer: Home page request
-  RocketChatServer -->> RocketChatClient: Authorize path, redirect_uri, response type loaded.
+  RocketChatServer -->> RocketChatClient: Authorize path, redirect_uri, response type loaded
   RocketChatClient ->> Oauth2Authorize: Generate credentialToken and request auth code
-  Oauth2Authorize ->> RocketChatServer: Request to redirect_uri with code and state
+  Oauth2Authorize -->> RocketChatClient: Return code and redirect_uri for callback
+  RocketChatClient ->> RocketChatServer: Request to redirect_uri with code and state
+  RocketChatServer -->> RocketChatClient: Return credentialToken and credentialSecret
   RocketChatServer ->> Oauth2Token: Request Oauth token by authorization code
   Oauth2Token -->> RocketChatServer: Return an access_token and a refresh_token
   RocketChatServer ->> ResourceServer: Call web API with access_token in authorization header
-  ResourceServer -->>+ RocketChatServer: Return identity data to RocketChat server
-  RocketChatServer ->> RocketChatServer: Collection Identity Info
+  ResourceServer -->> RocketChatServer: Return identity data to RocketChat server
+  Note right of RocketChatServer: Collection Identity Info
+  RocketChatClient ->>+ RocketChatServer: Login using authentication providers with credentialToken and credentialSecret
+  Note right of RocketChatServer: auth providers loop
+  RocketChatServer -->>- RocketChatClient: Resource response
 
-  RocketChatClient ->>+ RocketChatServer: Login using authentication providers
-  RocketChatServer -->> RocketChatClient: Resource response
-  Note right of RocketChatServer: auth providers
-  deactivate RocketChatServer
+  box transparent Identity Authorization Platform
+  participant Oauth2Authorize
+  participant Oauth2Token
+  participant ResourceServer
+  end
 ```
 
-## RocketChat Oauth configuration
+## RocketChatServer Oauth configuration
 To create a custom authentication method in your Rocket.Chat workspace:
 
 - Navigate to Administration > Workspace > Settings > OAuth.
@@ -55,7 +59,7 @@ For more detialed info please see the [`Auth with Microsoft code flow`](https://
 ## Home page request and response
 Rocket.Chat offers integrations with various providers such as Google, Apple, and GitHub. This provides flexibility and security so users can log in with any of these credentials. All the type of login method will loaded in the home page. Authorize path, Redirect uri, Response type and other import loaded info which is very useful for login.
 
-## Generate credentialToken then request authorization code
+## Generate credentialToken and request auth code
 
 ### Generate credentialToken
 After click the Oauth login button, the credentialToken which like session id for login will generated in the random way, so only the user and current client(browser) know the session id.
@@ -146,8 +150,14 @@ The auth code will be the response of LoginUrl request.
 code=0.AbcAqYXm1SM-2UKe-hXMXBzn2x4WhOMxA8BJnxH7amNCQtL8APU.AgABBAIAAAApTwJmzXqdR4BN2miheQMYAgDs_wUA9P8Hjlb9sDQamfLxWl_ukGw1Js8IBAlNSq9K3y6MFvkr-uCDOasVt1WLipwEY2irrnDPJVI78EONQ8P1jdKlIDjt-5sQME63u654FbJGKq8H-AV6YrDtaYxfV7cC0YGEcVlbDwYzT0-NRlHW17I9OXQmF0wyg0FIPqK8EJa-zCKPkGTGwqsPh11Ul5-qv90TxMjsfZPd9KZs2Kixiigtx_otW_S6qhbFHCXQVeSG_sO9W0Vn2avdOiAktEILUOWQo-ZH-wmSxfEzibkjvCZYXEtccP1kDxUhQa5Ck4zQWReIjqf2atH3_74ZhFFGMReKSVujqfO46hA7gd4OY7VVGikGlloUWVSFboMXQvQ1GKi7EJ2DEOiIXVM3Uu4_sl3X4dKShcBjSy4kuHfb8MMpQuUhL4NFmBg7A-qVl4D1muhayPaJyuT2-prggC5ciL7rlgMAWcoGgU5dpC-WujQRQVbva1w1HyGI6QL8biiU_fP0wP6-0mAsNVsBDhuMtoh0VZ2eKbLWGyvLL0pgTh8XiUMte9t5JgL4dSzlVAcHXUK2HWBeHql2J0LsR73arQHMh5QhlRa94JGB1zNtFnXn5xjfvkYDF3zTuxIwJa4JoEtPu9Krnu6-rhA3sHVUNUE6uTBDoIz5udVmAyaa4hNwDEhajSk4qCvEvEgk&
 ```
 
+## Return code and redirect_uri for callback
+
+Because the LoginUrl contain the redirect_uri as parameter, the Oauth2 Authorize server will return redirect_uri and code for callback to RocketChatServer. In the Oauth2 Authorize server, redirect_uri will be checked weather it is equal to one of the uris in the server.
+
+
 ## Request to redirect_uri with code and state
-Because the LoginUrl contain the redirect_uri as parameter, the Oauth2 Authorize will request to redirect_uri after get auth code. In the following, the redirect_uri with code, state, and session_state as parameter to obtain access_token from Oauth2 token service in the Authorizaiton platform.
+
+In the following, the redirect_uri with code, state, and session_state as parameter to obtain access_token from Oauth2 token service in the Authorizaiton platform.
 
 ```js title="Code"
 https://212c-34-92-204-228.ngrok-free.app/_oauth/365oauth?
@@ -434,8 +444,28 @@ custom_oauth_server registerService data 05 {
   }
 ```
 
-## About hooks loop
+## Login using authentication providers
 
+After registerService function execution, all the process of authorization finished and the info of identity collected.
+So which way for one user to login and which authentication provider will be choose?
+Firstly RocketClient try to login using authentication providers, the following is login call with credentialToken and credentialSecret.
+The credentialToken and credentialSecret is retrived from oauth redirect_uri 
+
+```js title="Login with credentialToken and credentialSecret"
+{
+    "msg": "method",
+    "method": "login",
+    "id":"42",
+    "params": [
+        {
+            "oauth": {
+                "credentialToken":"credential-token",
+                "credentialSecret":"credential-secret"
+            }
+        }
+    ]
+}
+```
 
 ```js
 const { updateOrCreateUserFromExternalService } = Accounts;
