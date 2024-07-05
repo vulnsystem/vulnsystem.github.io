@@ -157,17 +157,22 @@ Because the LoginUrl contain the redirect_uri as parameter, the Oauth2 Authorize
 
 ## Redirect to redirect_uri with code and state
 
-:::info
-Redirect means to access the redirect_uri is not from RokcetChatClient directly. After getting the code info and loading the page from the LoginUrl, the page will direct to redirect_uri automatically, so this request is not 
-:::
-In the following, the redirect_uri with code, state, and session_state as parameter to obtain access_token from Oauth2 token service in the Authorizaiton platform.
+Redirect means to access the redirect_uri is not from RokcetChatClient directly. It is a passive behavior on the browser side. After getting the code info and loading new page from the LoginUrl, the page will direct to redirect_uri automatically, so this request is not issued from RokcetChatClient, but passive behavior on the browser.
 
-```js title="Code"
+## Return credentialToken and credentialSecret
+
+In the following, the redirect_uri with code, state, and session_state as parameter to obtain credentialToken and credentialSecret from RocketChatServer.
+The credentialToken and credentialSecret is parameter for login.
+
+```js title="redirect_uri"
 https://212c-34-92-204-228.ngrok-free.app/_oauth/365oauth?
 code=0.AbcAqYXm1SM-2UKe-hXMXBzn2x4WhOMxA8BJnxH7amNCQtL8APU.AgABBAIAAAApTwJmzXqdR4BN2miheQMYAgDs_wUA9P8Hjlb9sDQamfLxWl_ukGw1Js8IBAlNSq9K3y6MFvkr-uCDOasVt1WLipwEY2irrnDPJVI78EONQ8P1jdKlIDjt-5sQME63u654FbJGKq8H-AV6YrDtaYxfV7cC0YGEcVlbDwYzT0-NRlHW17I9OXQmF0wyg0FIPqK8EJa-zCKPkGTGwqsPh11Ul5-qv90TxMjsfZPd9KZs2Kixiigtx_otW_S6qhbFHCXQVeSG_sO9W0Vn2avdOiAktEILUOWQo-ZH-wmSxfEzibkjvCZYXEtccP1kDxUhQa5Ck4zQWReIjqf2atH3_74ZhFFGMReKSVujqfO46hA7gd4OY7VVGikGlloUWVSFboMXQvQ1GKi7EJ2DEOiIXVM3Uu4_sl3X4dKShcBjSy4kuHfb8MMpQuUhL4NFmBg7A-qVl4D1muhayPaJyuT2-prggC5ciL7rlgMAWcoGgU5dpC-WujQRQVbva1w1HyGI6QL8biiU_fP0wP6-0mAsNVsBDhuMtoh0VZ2eKbLWGyvLL0pgTh8XiUMte9t5JgL4dSzlVAcHXUK2HWBeHql2J0LsR73arQHMh5QhlRa94JGB1zNtFnXn5xjfvkYDF3zTuxIwJa4JoEtPu9Krnu6-rhA3sHVUNUE6uTBDoIz5udVmAyaa4hNwDEhajSk4qCvEvEgk&
 state=eyJsb2dpblN0eWxlIjoicmVkaXWERY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJwVjNOcHdRUnlLc21HbUxwc3EtRHlHWjRmeGVwYWl6TXhPRWZmQVNiWmVPIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovLzIxMmMtMzQtOTItMjA0LTIyOC5uZ3Jvay1mcmVlLmFwcC9ob21lIn0%3d&
 session_state=2e1ade24-bffe-46ef-b1c7-934dc8dfbd00#
 ```
+
+## Request Oauth token by authorization code
+
 :::info
 
 The code, state, and session_state will be the query parameter in the registerService. In this funciton, the RocketServer will getAccessToken with code then getIdentity with access_token.
@@ -227,7 +232,6 @@ registerService() {
 ```
 
 
-## Request auth token by authorization code
 The RocketChat can use the authorization code to request an access token for the target resource. Authorization codes are short lived. Typically, they expire after about 10 minutes.
 
 ```js tittle="Rocket.Chat/apps/meteor/app/custom-oauth/server/custom_oauth_server.js"
@@ -303,6 +307,7 @@ custom_oauth_server getAccessToken 03 {
   id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1HTHFqOThWTkxvWGFGZnBKQ0JwZ0I0SmFLcyIsImtpZCI6Ik1HTHFqOThWTkxvWGFGZnBKQ0JwZ0I0SmFLcyJ9.eyJhdWQiOiJlMzg0NTYxMy0wMzMxLTQ5YzAtOWYxMS1mYjZhNjM0MjQyZDIiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNWU2ODVhOS0zZTIzLTQyZDktOWVmYS0xNWNjNWMxY2U3ZGIvIiwiaWF0IjoxNzE5NzEwOTM0LCJuYmYiOjE3MTk3MTA5MzQsImV4cCI6MTcxOTcxNDgzNCwiYW1yIjpbInB3ZCIsIm1mYSJdLCJmYW1pbHlfbmFtZSI6Ikd1bXAiLCJnaXZlbl9uYW1lIjoiRm9ycmVzdCIsImlwYWRkciI6IjIyMy4xMDQuNDIuODciLCJuYW1lIjoiRm9ycmVzdCBHdW1wIiwib2lkIjoiOTBmNzU5NmItODhiNi00NzY4LTgyMDQtOGM0NzZhNzNmZTI1IiwicmgiOiIwLkFiY0FxWVhtMVNNLTJVS2UtaFhNWEJ6bjJ4TldoT014QThCSm54SDdhbU5DUXRMOEFQVS4iLCJzdWIiOiJLR2NlTEgtSG9FTklONUg0alZ3d2FMSTJydHBILVMyQ1RuSkNIQTB5MGFrIiwidGlkIjoiZDVlNjg1YTktM2UyMy00MmQ5LTllZmEtMTVjYzVjMWNlN2RiIiwidW5pcXVlX25hbWUiOiJGb3JyZXN0R3VtcEBHaXRjb2lucy5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJGb3JyZXN0R3VtcEBHaXRjb2lucy5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJGSkI0a0xDRnlVV21ud1ZvdE93OEFRIiwidmVyIjoiMS4wIn0.oGP8qczVpNjzG03en1LmF6BcxOHsSsdU5yNDFDzR7nJsNbnIniPFg8Q9Qr6WWknEvrCGdjMWWf9_7lC6HxK6pr0w28txFOwbPsX_sKFXQBgzTzBUhKuVYmaMv9koFf4UhODyncmDtfiEicBKtOEGf3Rqz534hTXmHXPb9wLIz4_SfmZAa_nuV8my7oBYrrY95rRE-ZfsV5DCoSbu3AiIK4_n21EYfKVE_6J6S46X8r5WeQvLOQ1A4CEZI2lIAToWdT2T1fVYxrsMpNpcfcHtGF6HaD1h_0rmy_QOgZ8nClDI2tx-DnTWLjMoqNCzWFY1p1nLPx_60xqACFqVl_3vdQ'
 }
 ```
+
 ## Call web API with access_token in authorization header
 
 You will have all right to access resources with access_token. The resources link is like https://login.microsoftonline.com/d5e685a9-3e23-42d9-9efa-15cc5c1ce7db/openid/userinfo.
@@ -380,7 +385,7 @@ custom_oauth_server getIdentity 04 {
 ## Collection Identity Info
 
 At the end of registerService function, all the info of identity will be collected by RocketServer. 
-**The RocketServer will find one identity by key field like email or username. then binding the identity credentialToken and credentialSecret for oauth login.**
+**The RocketServer will find one identity by key field like email or username, then binding the identity credentialToken and credentialSecret for oauth login in next step.**
 
 ```js title="Rocket.Chat/apps/meteor/app/custom-oauth/server/custom_oauth_server.js"
 	registerService() {
@@ -447,12 +452,13 @@ custom_oauth_server registerService data 05 {
   }
 ```
 
-## Login using authentication providers
+## Login using authentication providers with credentialToken and credentialSecret
 
 After registerService function execution, all the process of authorization finished and the info of identity collected.
 So which way for one user to login and which authentication provider will be choose?
 Firstly RocketClient try to login using authentication providers, the following is login call with credentialToken and credentialSecret.
-The credentialToken and credentialSecret is retrived from oauth redirect_uri 
+The credentialToken and credentialSecret is obtained in the **Return credentialToken and credentialSecret** step in RocketChatClient.
+
 
 ```js title="Login with credentialToken and credentialSecret"
 {
@@ -469,14 +475,21 @@ The credentialToken and credentialSecret is retrived from oauth redirect_uri
     ]
 }
 ```
+### Oauth providers loop
 
-```js
+When Login function executing, updateOrCreateUserFromExternalServiceAsync in custom_oauth_server.js will try to find which Oauth provider to service login.
+To find Oauth provider with serviceName by looping the provider list in the RocketChatServer, then using addHookToProcessUser funciton to find one dedicated user by key field which have been configured in the RocketChatServer. So the user now have new addtional properties like email2fa and oauth type for login. 
+
+
+```js title="/Rocket.Chat/apps/meteor/app/custom-oauth/server/custom_oauth_server.js"
 const { updateOrCreateUserFromExternalService } = Accounts;
 const updateOrCreateUserFromExternalServiceAsync = async function (...args /* serviceName, serviceData, options*/) {
+  //highlight-start
 	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		console.log("XXXXXXXXXXXXXXXXXXXx custom_oauth_server hook hook hook hook hook XXXXXXXXXXXXXXXXXXXXXXXXXXx");
 		await hook.apply(this, args);
 	}
+  //highlight-end
 
 	const [serviceName, serviceData] = args;
 
@@ -496,7 +509,7 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 };
 ```
 
-```js
+```js title="/Rocket.Chat/apps/meteor/app/custom-oauth/server/custom_oauth_server.js"
 addHookToProcessUser() {
 		BeforeUpdateOrCreateUserFromExternalService.push(async (serviceName, serviceData /* , options*/) => {
 
@@ -512,6 +525,7 @@ addHookToProcessUser() {
 			if (serviceData.username) {
 				let user = undefined;
 
+        //highlight-start
 				if (this.keyField === 'username') {
 					user = this.mergeUsersDistinctServices
 						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
@@ -521,6 +535,7 @@ addHookToProcessUser() {
 						? await Users.findOneByEmailAddress(serviceData.email)
 						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
 				}
+        //highlight-start
 
 				if (!user) {
 					console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXx gitcoins return 1");
@@ -563,7 +578,7 @@ addHookToProcessUser() {
 ```
 
 
-```
+```js title="Output Log: How to find Oauth provider by serviceName"
 XXXXXXXXXXXXXXXXXXXx custom_oauth_server hook hook hook hook hook XXXXXXXXXXXXXXXXXXXXXXXXXXx
 XXXXXXXXXXXXXXXXXXXx custom_oauth_server addHookToProcessUser serviceName 12 365oauth
 XXXXXXXXXXXXXXXXXXXx custom_oauth_server addHookToProcessUser this.name 12 gitlab
@@ -625,9 +640,8 @@ XXXXXXXXXXXXXXXXXXXx custom_oauth_server addHookToProcessUser serviceData 12 {
 }
 ```
 
-## Login from the client
 
-```
+```js title="User properties with Oauth type"
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXx gitcoins return 2
 ..................... authenticaiton server Account validateLoginAttemptAsync 10 {
   type: '365oauth',
@@ -692,6 +706,14 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXx gitcoins return 2
     token: undefined
   }
 }
+```
+
+
+### 2FA login
+
+2FA (Two-Factor Authentication) in the RocketChat context, after verify the identiy info from Identity Authorization Platform, the TOTP (Time-Based One-Time Password) will be send out to your email. After input TOTP to login page, then login successfuly. When try to 2FA with TOTP, there is exeception happend to trigger the RocketChatServer to send the TOTP to your email.
+
+```js title="Login Exception to trigger TOTP send out"
 Exception while invoking method login errorClass [Error]: TOTP Required [totp-required]
     at app/2fa/server/code/index.ts:211:9
     at /home/gitcoins/.meteor/packages/promise/.0.12.2.1v51k7w.6dob++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/meteor-promise/fiber_pool.js:43:40
@@ -766,36 +788,5 @@ Here is your authentication code:
 274-035
 ```
 
-
-:::info JitPack or Sonatype OSSRH?
-
-The simplest choice would be [JitPack](https://jitpack.io/), which might not give you much in terms of customization or control, but is very easy to get started with. All you have to do is publish your project on GitHub, and JitPack should be able to build and distribute it immediately. If you’re new to libraries, this is a great choice for getting your code out there.
-
-:::
-
-:::warning Help
-I try to use JitPack but failed to config. If you success to use JitPack in the [Android SDK for Stream Chat](https://github.com/GetStream/stream-chat-android), please let me know. Thanks.
-:::
-
-## Overview
-
-Here's a quick overview of the steps we'll go through:
-- Registering a Jira account with Sonatype, and verifying your ownership of the group ID you want to publish your artifact with
-- Generating a GPG key pair for signing your artifacts, publishing your public key, and exporting your private key
-- Setting up Gradle tasks that can sign upload your artifacts to a staging repository
-- Manually going through the process of checking your artifacts in the staging repo and releasing them via the Sonatype web UI
-- Automating the close & release flow with a Gradle plugin
-- Configuring CI workflows with GitHub Actions to automate all of the above
-A lot of ground to cover - let’s go!
-
-
-After choosing a language and an avatar, you’ll end up on this landing page - click on Create an issue
-- **Summary**: Create repository for your.group.id.here
-- **Description**: An optional, quick summary of what your project is.
-- **Group Id**: Your group ID, as described a few sections earlier.
-- **Project URL**: If your project has a webpage, the URL of that page. This can also be just the GitHub repository.
-- **SCM url**: Your source control URL, i.e. the GitHub repository link.
-- **Username(s)**: If you want additional users (on top of the one you’re using for this process) to have deploy access for your group ID, you can list them here.
-- **Already Synced to Central**: If you’re just getting started, this should be No.
 
 Soon after opening it, your issue will get a comment telling you to verify that you own the domain corresponding to your group ID. To comply with this, add the required TXT record to your domain - how to do this will depend on where your domain is registered, but it should be a fairly simple task. Login to the [goDaddy](https://dcc.godaddy.com/control/portfolio/gitcoins.io/settings) to set the TXT record with the guide from [the issue created](https://issues.sonatype.org/browse/OSSRH-97587) in jira for Sonatype.
