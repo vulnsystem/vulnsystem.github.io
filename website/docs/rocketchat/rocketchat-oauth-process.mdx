@@ -25,7 +25,7 @@ sequenceDiagram
   RocketChatServer -->> RocketChatClient: Authorize path, redirect_uri, response type loaded
   RocketChatClient ->> Oauth2Authorize: Generate credentialToken and request auth code
   Oauth2Authorize -->> RocketChatClient: Return code and redirect_uri for callback
-  RocketChatClient ->> RocketChatServer: Request to redirect_uri with code and state
+  RocketChatClient ->> RocketChatServer: Redirect to redirect_uri with code and state
   RocketChatServer -->> RocketChatClient: Return credentialToken and credentialSecret
   RocketChatServer ->> Oauth2Token: Request Oauth token by authorization code
   Oauth2Token -->> RocketChatServer: Return an access_token and a refresh_token
@@ -155,8 +155,11 @@ code=0.AbcAqYXm1SM-2UKe-hXMXBzn2x4WhOMxA8BJnxH7amNCQtL8APU.AgABBAIAAAApTwJmzXqdR
 Because the LoginUrl contain the redirect_uri as parameter, the Oauth2 Authorize server will return redirect_uri and code for callback to RocketChatServer. In the Oauth2 Authorize server, redirect_uri will be checked weather it is equal to one of the uris in the server.
 
 
-## Request to redirect_uri with code and state
+## Redirect to redirect_uri with code and state
 
+:::info
+Redirect means to access the redirect_uri is not from RokcetChatClient directly. After getting the code info and loading the page from the LoginUrl, the page will direct to redirect_uri automatically, so this request is not 
+:::
 In the following, the redirect_uri with code, state, and session_state as parameter to obtain access_token from Oauth2 token service in the Authorizaiton platform.
 
 ```js title="Code"
