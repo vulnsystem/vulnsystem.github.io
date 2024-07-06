@@ -33,8 +33,9 @@ sequenceDiagram
   ResourceServer -->> RocketChatServer: Return identity data to RocketChat server
   Note right of RocketChatServer: Collection Identity Info
   RocketChatClient ->>+ RocketChatServer: Login using authentication providers with credentialToken and credentialSecret
-  Note right of RocketChatServer: auth providers loop
-  RocketChatServer -->>- RocketChatClient: Resource response
+  Note right of RocketChatServer: Oauth providers loop
+  Note right of RocketChatServer: 2FA TOTP send
+  RocketChatServer -->>- RocketChatClient: TOTP login page
 
   box transparent Identity Authorization Platform
   participant Oauth2Authorize
@@ -788,5 +789,8 @@ Here is your authentication code:
 274-035
 ```
 
-
-Soon after opening it, your issue will get a comment telling you to verify that you own the domain corresponding to your group ID. To comply with this, add the required TXT record to your domain - how to do this will depend on where your domain is registered, but it should be a fairly simple task. Login to the [goDaddy](https://dcc.godaddy.com/control/portfolio/gitcoins.io/settings) to set the TXT record with the guide from [the issue created](https://issues.sonatype.org/browse/OSSRH-97587) in jira for Sonatype.
+:::info
+credentialToken in all steps must be same in one login session.
+redirect_uri in all steps must be same in one login session.
+state in all steps must be same in one login session.
+:::
