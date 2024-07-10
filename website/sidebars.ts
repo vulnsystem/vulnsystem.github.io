@@ -59,7 +59,6 @@ const sidebars: SidebarsConfig = {
         'rocketchat/rocketchat-microsoft-oauth',
         'rocketchat/rocketchat-metamask-oauth',
         'rocketchat/debugging-with-ngrok',
-        'rocketchat/stream-feeds',
       ],
    },
    {
