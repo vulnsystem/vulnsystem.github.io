@@ -27,8 +27,9 @@ sequenceDiagram
   participant RocketChatServer as RocketChat Server
 
   Note right of RocketChatServer: RocketChatServer Oauth configuration
-  RocketChatClient ->> Oauth2Authorize: Generate credentialToken and MetaMask code
-  Oauth2Authorize -->> RocketChatClient: Return MetaMask code and redirect_uri for callback
+  RocketChatClient ->> Oauth2Authorize: Request MetaMask Login page 
+  RocketChatClient ->> RocketChatServer: Redirect to redirect_uri with MetaMask code and state
+  RocketChatServer -->> RocketChatClient: Return credentialToken and credentialSecret
   RocketChatServer ->> Oauth2Token: Verify the MetaMask code
   Oauth2Token -->> RocketChatServer: Return an sign as access_token and a refresh_token
   RocketChatServer ->> ResourceServer: Call web API with access_token in authorization header
@@ -41,7 +42,7 @@ sequenceDiagram
   end
 ```
 
-## RocketChatServer Oauth configuration
+## RocketChatServer MetaMask Oauth configuration
 To create a custom authentication method in your Rocket.Chat workspace:
 
 - Navigate to Administration > Workspace > Settings > OAuth.
@@ -55,6 +56,101 @@ To create a custom authentication method in your Rocket.Chat workspace:
 For more detialed info please see the [`Auth with Microsoft code flow`](https://vulnsystem.github.io/docs/rocketchat/rocketchat-microsoft-oauth)
 
 
+## Request MetaMask Login page
+The following page will be loaded according to the RocketChatServer MetaMask Oauth configuration
+```js
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+    
+<script>
+  //highlight-start
+  const sdk = new MetaMaskSDK.MetaMaskSDK({
+    dappMetadata: {
+      name: "RocketChat with MetaMask Oauth",
+    },
+    logging: {
+      sdk: false,
+    }
+  });
+  //highlight-end
+</script>
+<script>
+  let provider;
+
+  function redirectTo(timestamp, account, sign) {
+    const url = new URL(window.location.href);
+    // Get the query parameters
+    const params = new URLSearchParams(url.search);
+    // Iterate through all parameters
+    params.forEach((value, name) => {
+        console.log(name, value);
+    });
+    //highlight-start
+    const code = [timestamp, account, sign].join('.');
+    const redirectUrl = `${params.get('redirect_uri')}?code=${code}&state=${encodeURIComponent(params.get('state'))}`;
+    //highlight-end
+    console.log(redirectUrl)
+    //highlight-start
+    window.location.href = redirectUrl;
+    //highlight-end
+  }
+
+
+  /**
+   * Sign Typed Data V4
+   */
+   async function generateCode () {
+    const accounts = await sdk.connect();
+    provider = sdk.getProvider();
+
+    const msgParams = {
+      domain: {
+        chainId: '0x1',
+        name: 'RocketChat Login',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1',
+      },
+      message: {
+        account: '0xABCD',
+        timestamp: 0,
+      },
+      primaryType: 'Code',
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        Code: [
+          { name: 'account', type: 'string' },
+          { name: 'timestamp', type: 'uint256' },
+        ],
+      },
+    };
+
+    try {
+      //highlight-start
+      const from = accounts[0];
+      msgParams.message.account = from;
+      msgParams.message.timestamp = Math.floor(Date.now()/1000);
+      const sign = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [from, JSON.stringify(msgParams)],
+      });
+      console.log(sign);
+      //highlight-end
+
+      redirectTo(msgParams.message.timestamp, from, sign);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  window.onload = generateCode;
+</script>
+
+```
 ## Generate credentialToken and  MetaMask code
 
 ### Generate credentialToken
