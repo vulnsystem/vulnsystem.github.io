@@ -37,6 +37,10 @@ $ ngrok http 300
 Once you execute the command listed above, Ngrok will spin up a "forwarding URL" that you can use to login the RocketChat server(http://localhost:3000). 
 Now that your forwarding URL is available and online, copy the HTTPS forwarding URL as we will need it in the next step.
 
+<p align="center">
+![](/img/rocketchat/ngrok-command.png)
+</p>
+
 ```bash tittle="forwarding URL"
 Forwarding                    https://d6656c3ef2d4.ngrok.app -> http://localhost:3000     
 ```
@@ -56,6 +60,10 @@ After change to new forwarding url like https://d6656c3ef2d4.ngrok.app, the Rock
 ## Receiving Events
 
 One of the many helpful tools that Ngrok provides is a web interface for inspecting incoming payloads. If you reference your terminal, you'll notice that there is a link for the "Web Interface" that runs on a local port – generally port 4040 if available. Navigate to **http://localhost:4040** and you will see a dashboard for Ngrok.
+
+<p align="center">
+![](/img/rocketchat/ngrok-4040.png)
+</p>
 
 Next, fire off an event such as a message from your chat interface to receive and inspect the payload. Once sent, the webhook will forward the payload to your Ngrok server for inspection via a POST request.
 
