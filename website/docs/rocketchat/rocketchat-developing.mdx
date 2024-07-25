@@ -1,23 +1,48 @@
 ---
-id: stream-feeds
 description: Create a Markdown Document
 ---
 
 # RocketChat server developing
 
-Create a Markdown file, `greeting.md`, and place it under the `docs` directory.
+[Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
+
+We are the ultimate **Free Open Source Solution** for team communications, enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
+
+
+:::info[Useful links]
+
+[`RocketChat Server`](https://github.com/RocketChat/Rocket.Chat0)
+
+[`RocketChat Server README`](https://github.com/RocketChat/Rocket.Chat/blob/develop/README.md)
+
+:::
+
+## Prerequisites
+
+You can follow these instructions to setup a dev environment:
+
+- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
+- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://www.meteor.com/developers/install
+- Install **yarn**: https://yarnpkg.com/getting-started/install
+- Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
+- Run `yarn` to install dependencies
+
+## Starting Rocket.Chat
+To install all dependency libraries by yarn command, node(v14.21.3), yarn(3.5.0)
 
 ```bash
-website # root directory of your site
-├── docs
-│   └── greeting.md
-├── src
-│   └── pages
-├── docusaurus.config.js
-├── ...
+yarn
 ```
 
-```md
----
-description: Create a doc page with rich content.
----
+```bash
+yarn dev # run all packages
+```
+OR
+```bash
+yarn dsv # run only meteor (front and back) with pre-built packages
+```
+
+After initialized, you can access the server at http://localhost:3000
+
+More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
+PS: For Windows you MUST use WSL2 and have +12Gb RAM
