@@ -34,7 +34,7 @@ Now that Ngrok is properly installed and RocketChat Server runnig on the http://
 ```bash
 $ ngrok http 300
 ```
-Once you execute the command listed above, Ngrok will spin up a "forwarding URL" that you can use to login the RocketChat server. 
+Once you execute the command listed above, Ngrok will spin up a "forwarding URL" that you can use to login the RocketChat server(http://localhost:3000). 
 Now that your forwarding URL is available and online, copy the HTTPS forwarding URL as we will need it in the next step.
 
 ```bash tittle="forwarding URL"
@@ -51,6 +51,7 @@ The setting Site URL is configured to https://212c-34-92-204-228.ngrok-free.app 
 
 Do you want to change to https://d6656c3ef2d4.ngrok.app?
 :::
+After change to new forwarding url like https://d6656c3ef2d4.ngrok.app, the RocketChat server will be no response from any request. So please restart the server again.
 
 ## Receiving Events
 
@@ -58,58 +59,3 @@ One of the many helpful tools that Ngrok provides is a web interface for inspect
 
 Next, fire off an event such as a message from your chat interface to receive and inspect the payload. Once sent, the webhook will forward the payload to your Ngrok server for inspection via a POST request.
 
-Ngrok will intermittently return a 502 Bad Gateway response. Please do not be alarmed by this as debugging with Ngrok is only for debugging purposes. In a production or staging environment, your server should return a 200 status code.
-Below is an example of the payload for a message:
-
-```js
-{
-    "cid": "messaging:MYH-HwwO",
-    "type": "message.new",
-    "message": {
-        "id": "2ecb4159e50b38cfb96e8ad2c4febd69-1ea9aa03-3edf-4491-8619-b34cabd4bcfc",
-        "text": "Hello!",
-        "html": "<p>Hello!</p>\n",
-        "type": "regular",
-        "user": {
-            "id": "2ecb4159e50b38cfb96e8ad2c4febd69",
-            "role": "admin",
-            "created_at": "2019-09-16T13:35:08.977932Z",
-            "updated_at": "2019-12-04T23:28:27.744384Z",
-            "last_active": "2019-12-04T23:28:27.743804Z",
-            "online": true,
-            "image": "https://ui-avatars.com/api/?name=nick_parsons&size=192&background=000000&color=6E7FFE&length=1",
-            "name": "nick_parsons",
-            "username": "nick_parsons"
-        },
-        "attachments": [],
-        "latest_reactions": [],
-        "own_reactions": [],
-        "reaction_counts": null,
-        "reaction_scores": {},
-        "reply_count": 0,
-        "created_at": "2019-12-04T23:28:35.561344Z",
-        "updated_at": "2019-12-04T23:28:35.561344Z",
-        "mentioned_users": []
-    },
-    "user": {
-        "id": "2ecb4159e50b38cfb96e8ad2c4febd69",
-        "role": "admin",
-        "created_at": "2019-09-16T13:35:08.977932Z",
-        "updated_at": "2019-12-04T23:28:27.744384Z",
-        "last_active": "2019-12-04T23:28:27.743804Z",
-        "online": true,
-        "channel_last_read_at": "1970-01-01T00:00:00Z",
-        "total_unread_count": 0,
-        "unread_channels": 0,
-        "unread_count": 0,
-        "image": "https://ui-avatars.com/api/?name=nick_parsons&size=192&background=000000&color=6E7FFE&length=1",
-        "name": "nick_parsons",
-        "username": "nick_parsons",
-        "channel_unread_count": 0
-    },
-    "watcher_count": 1,
-    "created_at": "2019-12-04T23:28:35.566646131Z",
-    "channel_type": "messaging",
-    "channel_id": "MYH-HwwO"
-}
-```
