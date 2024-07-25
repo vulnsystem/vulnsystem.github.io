@@ -55,7 +55,6 @@ const sidebars: SidebarsConfig = {
         id: 'rocketchat/rocketchat-oauth',
       },
       items: [
-        'rocketchat/rocketchat-developing',
         'rocketchat/rocketchat-oauth-process',
         'rocketchat/rocketchat-microsoft-oauth',
         'rocketchat/rocketchat-metamask-oauth',
