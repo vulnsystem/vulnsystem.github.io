@@ -30,7 +30,7 @@ sequenceDiagram
   RocketChatClient ->> Oauth2Authorize: Request MetaMask Login page 
   RocketChatClient ->> RocketChatServer: Redirect to redirect_uri with MetaMask code and state
   RocketChatServer -->> RocketChatClient: Return credentialToken and credentialSecret
-  RocketChatServer ->> Oauth2Token: Verify the MetaMask code
+  RocketChatServer ->> Oauth2Token: Request to verify the MetaMask code
   Oauth2Token -->> RocketChatServer: Return an sign as access_token and a refresh_token
   RocketChatServer ->> ResourceServer: Call web API with access_token in authorization header
   ResourceServer -->> RocketChatServer: Return identity data to RocketChat server
@@ -197,17 +197,135 @@ state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiIwOEh6LTdHbmdscE
 ## Return credentialToken and credentialSecret
 This step is same as [RocketChat Oauth flow](https://vulnsystem.github.io/docs/rocketchat/rocketchat-oauth-process#return-credentialtoken-and-credentialsecret).
 
-## Verify the MetaMask code
+## Request to verify the MetaMask code
+All the info of timestamp, account, sign are generated in the RocketChat client side by MetaMask, acctually it is not necessary to send the code to the Oauth server, We're just simulating Oauth2 process by Metamask. Because all the auth and identity info have be gererated when connect to the MetamMeask in the client side. The client have all the info for user login, which include account, sign, timestamp, and other user infomation. The MetaMask code in the https protocal will be protected in transfer from RocketChat server to Oauth server. After Oauth server get the code then recoverTypedSignature to check the if(account == recoverTypedSignature(timestamp, sign)) , if successfully verified, it means the person who have the account have been sign the timestamp and allow to access/login to the RocketChat.
+
+```js tittle="Verify the MetaMask code"
+personalSignVerify(timestamp, account, sign) {
+        const time = BigInt(timestamp);
+        const msgParams = {
+          domain: {
+            chainId: '0x1',
+            name: 'RocketChat Login',
+            verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+            version: '1',
+          },
+          message: {
+            account: account,
+            timestamp: time,
+          },
+          primaryType: 'Code',
+          types: {
+            EIP712Domain: [
+              { name: 'name', type: 'string' },
+              { name: 'version', type: 'string' },
+              { name: 'chainId', type: 'uint256' },
+              { name: 'verifyingContract', type: 'address' },
+            ],
+            Code: [
+              { name: 'account', type: 'string' },
+              { name: 'timestamp', type: 'uint256' },
+            ],
+          },
+        };
+
+        try {
+            const from = account;
+            //highlight-start
+            const recoveredAddr = recoverTypedSignature({
+                data: msgParams,
+                signature: sign,
+                version: 'V4',
+            });
+            //highlight-end
+
+            if (toChecksumAddress(recoveredAddr) === toChecksumAddress(from)) {
+                console.log(`Successfully verified signer as ${recoveredAddr}`);
+                return true;
+            } else {
+                console.log(
+                `Failed to verify signer when comparing ${recoveredAddr} to ${from}`,
+                );
+                return false;
+            }
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    };
+
+
+```
+
 ## Return an sign as access_token and a refresh_token
+
+if MetaMask code successfully verified, the user info will be stored in one Map structure named users. And return the sign as access_token and refresh_token, it is ready for next step to retrive the identity info. 
+
+```js tittle="Return the sign as token"
+    token(options = {}) {
+        return (req, res, next) => {
+            const code = req.body.code;
+            const codeParts = code.split('.');
+            const timestamp = codeParts[0];
+            const account = codeParts[1];
+            const sign = codeParts[2];
+            if(this.personalSignVerify(timestamp, account, sign)){
+                const tokenResponse = {
+                    token_type: 'Bearer',
+                    expires_in: '3599',
+                    ext_expires_in: '3599',
+                    expires_on: '1717638666',
+                    access_token: sign,
+                    refresh_token: sign,
+                    id_token: sign 
+                };
+
+                const user = {
+                    amr: '["pwd","mfa"]',
+                    ipaddr: '34.92.204.228',
+                    oid: '90f7596b-88b6-4768-8204-8c476a73fe25',
+                    rh: '0.AbcAqYXm1SM-2UKe-hXMXBzn2xNWhOMxA8BJnxH7amNCQtL8APU.',
+                    tid: 'd5e685a9-3e23-42d9-9efa-15cc5c1ce7db',
+                    uti: 'YCuQilrDeEeCWYCghqobAA',
+                    ver: '1.0'
+                };
+                user.account = account;
+                user.email = account + "@gitcons.io";
+                user.sub = account;
+                //highlight-start
+                this.users.set(sign, user);
+                res.json(tokenResponse);
+                //highlight-end
+            } else {
+                throw new Error('Verificaton Failure');
+            }
+        }
+    }
+```
+
 ## Call web API with access_token in authorization header
-## Return identity data to RocketChat server
+So with access_token in authorization header to call resources link, then RocketServer get the identity info.
+Before return the identity info, the timestamp in the user info must not be out-of-date. Because the code is short lifespan ensures that if an attacker attempts to use a captured code multiple times, it will quickly become invalid.
 
+```js tittle="Return userinfo"
+ userinfo(options = {}) {
+        return (req, res, next) => {
+            const authHeader = req.headers.authorization;
+            let token = null;
+            if (authHeader && authHeader.startsWith('Bearer')) {
+                token = authHeader.split(' ')[1];
+            }
 
-
-
-
-
-
+            if (token && this.users.has(token)) {
+                const user = this.users.get(token);
+                //To check the timestamp in the user info must not be out-of-date.
+                res.json(user);
+            } else {
+                throw new Error('No user info');
+            }
+        }
+    }
+```
 
 :::info
 - **credentialToken** in all steps must be same in one login session.
