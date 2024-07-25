@@ -2,7 +2,7 @@
 description: Rocketchat with MetaMask Identity Authorization Platform
 ---
 
-# Rocketchat with MetaMask Authorization flow
+# Rocketchat with MetaMask Code flow
 
 ## RocketChat with MetaMask Oauth2 overview
 
@@ -43,18 +43,55 @@ sequenceDiagram
 ```
 
 ## RocketChatServer MetaMask Oauth configuration
-To create a custom authentication method in your Rocket.Chat workspace:
+To create a custom authentication method in your Rocket.Chat workspace: Navigate to Administration > Workspace > Settings > OAuth.
 
-- Navigate to Administration > Workspace > Settings > OAuth.
+OAuth server configuration fields:
 
-- Click on Custom OAuth and set the new OAuth integration name.
+- Enable: Set to true to enable this OAuth integration
 
-- After creating the new integration, you are given the Callback URL. Provide this as the redirect URI when you are creating your Azure app.
+- URL: https://acb3-34-96-147-151.ngrok-free.app
 
-- You will also need to fill in other configuration fields.
+- Token Path: /metamask/token
 
-For more detialed info please see the [`Auth with Microsoft code flow`](https://vulnsystem.github.io/docs/rocketchat/rocketchat-microsoft-oauth)
+- Token Sent Via: Select Header
 
+- Identity Token Sent Via: Select Header
+
+- Identity Path: /metamask/userinfo
+
+- Authorize Path: /metamask/authorize
+
+- Scope: openid profile email
+
+- Param Name for access token: access_token
+
+- Id: null
+
+- Secret: null
+
+- Login style: Select Redirect.
+
+- Button Text: MetaMask.
+
+- Key Field: select Email
+
+- Username field: account
+
+- Email field: email
+
+- Name field: account
+
+- Merge Users: True
+
+- Merge Users From Distinct Services: True
+
+- Show Button in Login page: True
+
+- Click Save changes.
+
+After saving, you will find the MetaMask Oauth button on the login and signup page.
+
+Simply sign in to your Office account to authenticate!
 
 ## Request MetaMask Login page
 The following page will be loaded according to the RocketChatServer MetaMask Oauth configuration
@@ -292,6 +329,7 @@ if MetaMask code successfully verified, the user info will be stored in one Map 
                 user.account = account;
                 user.email = account + "@gitcons.io";
                 user.sub = account;
+                user.expireTime = timestamp;
                 //highlight-start
                 this.users.set(sign, user);
                 res.json(tokenResponse);
@@ -302,6 +340,9 @@ if MetaMask code successfully verified, the user info will be stored in one Map 
         }
     }
 ```
+:::info
+user.sub is very useful attribute in the user object. The "sub" claim is used to identify the principal that is the subject of the MetaMask oauth in RocketChatServer. This claim can be used to uniquely identify the Oauth entity.
+:::
 
 ## Call web API with access_token in authorization header
 So with access_token in authorization header to call resources link, then RocketServer get the identity info.
@@ -318,8 +359,13 @@ Before return the identity info, the timestamp in the user info must not be out-
 
             if (token && this.users.has(token)) {
                 const user = this.users.get(token);
-                //To check the timestamp in the user info must not be out-of-date.
-                res.json(user);
+                //To check the expireTime in the user info
+                if(Math.floor(Date.now()/1000) <= user.expireTime) {
+                    console.log("user info....", user);
+                    res.json(user);
+                } else {
+                    return res.status(400).json({ error: 'Out of date' });
+                }
             } else {
                 throw new Error('No user info');
             }
