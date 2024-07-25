@@ -27,22 +27,74 @@ You can follow these instructions to setup a dev environment:
 - Clone this repo: **git clone https://github.com/RocketChat/Rocket.Chat.git**
 - Run *yarn* to install dependencies
 
+:::info
+- node v14.21.3
+- yarn 3.5.0
+- git branch is **develop**
+:::
+
 ## Starting RocketChat
-To install all dependency libraries by yarn command, node v14.21.3, yarn 3.5.0
+To install all dependency libraries by yarn command, 
 
 ```bash
 yarn
 ```
+It will take long time to build porject with yarn dsv command.
+```bash
+yarn dsv # run only meteor (front and back) with pre-built packages
+```
+If server runing info showed in the shell, it means build and run the RocketChat Server successfully.
+
+```js
+@rocket.chat/meteor:dsv: I20240725-08:53:04.194(0)? +-----------------------------------------------+
+@rocket.chat/meteor:dsv: I20240725-08:53:04.194(0)? |                 SERVER RUNNING                |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.195(0)? +-----------------------------------------------+
+@rocket.chat/meteor:dsv: I20240725-08:53:04.195(0)? |                                               |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.196(0)? |  Rocket.Chat Version: 6.11.0-develop          |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.196(0)? |       NodeJS Version: 14.21.4 - x64           |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.196(0)? |      MongoDB Version: 7.0.5                   |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.196(0)? |       MongoDB Engine: wiredTiger              |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.197(0)? |             Platform: linux                   |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.197(0)? |         Process Port: 22674                   |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.197(0)? |             Site URL: http://localhost:3000/  |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.197(0)? |     ReplicaSet OpLog: Enabled                 |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.197(0)? |          Commit Hash: 978e2d18f6              |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.198(0)? |        Commit Branch: develop                 |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.198(0)? |                                               |
+@rocket.chat/meteor:dsv: I20240725-08:53:04.198(0)? +-----------------------------------------------+
+
+```
+:::info
+The following command always failed.
 
 ```bash
 yarn dev # run all packages
 ```
-OR
-```bash
-yarn dsv # run only meteor (front and back) with pre-built packages
-```
+:::
 
 After initialized, you can access the server at http://localhost:3000
 
 More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
 PS: For Windows you MUST use WSL2 and have +12Gb RAM
+
+## Logs levels
+
+Logs are a very useful way to monitor workspace activities in detail. They can also be very helpful for debugging in case of failures or errors. Here, you have the interface to configure how server logs are received.
+
+To access this section, go to Administration > Workspace > Settings > Logs.
+
+- Log Exceptions to Channel: Set a channel to receive all captured exceptions. Leave empty to ignore exceptions.
+
+- Log Level: A dropdown to select the level of logs to receive
+
+- Log View Limit: The limit of logs to view
+
+- Trace method calls: When enabled, it enables a trace of every method call.
+
+- Trace method filter: The text here is evaluated as RegExp (new RegExp('text')). Keep it empty to show a trace of every call.
+
+- Trace subscription calls: If enabled, every subscription call will be traced.
+
+- Trace subscription filter: The text here is evaluated as RegExp (new RegExp('text')). Keep it empty to show a trace of every call.
+
+- Log Exceptions to Channel: A channel that receives all captured exceptions. Leave empty to ignore exceptions.
