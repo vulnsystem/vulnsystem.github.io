@@ -12,11 +12,26 @@ const sidebars: SidebarsConfig = {
     'introduction',
     {
       type: 'category',
+      label: 'Generative AI',
+      link: {
+        type: 'doc',
+        id: 'generativeAI/generativeAI-oauth',
+      },
+      collapsed: false,
+      items: [
+        'generativeAI/generativeAI-developing',
+        'generativeAI/generativeAI-oauth-process',
+        'generativeAI/generativeAI-microsoft-oauth',
+        'generativeAI/generativeAI-metamask-oauth',
+        'generativeAI/generativeAI-with-ngrok',
+      ],
+   },
+    {
+      type: 'category',
       label: 'Getting Started',
       link: {
         type: 'generated-index',
       },
-      collapsed: false,
       items: [
         'installation',
         'tokengeneration',

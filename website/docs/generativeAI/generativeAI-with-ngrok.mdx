@@ -1,0 +1,68 @@
+---
+description: Create a Markdown Document
+---
+
+# Debugging with Ngrok
+
+Ngrok is a tool and bridge allows you to expose a port on your local machine to the internet, allowing you to receive and monitor incoming requests from external sources such as webhooks. This makes Ngrok a perfect fit for debugging webhook payloads that come from Stream Chat.
+
+Ngrok is All-in-one API gateway, Kubernetes Ingress, DDoS protection, firewall, and global load balancing as a service.
+
+:::info[Useful links]
+
+[`Ngrok provides is a web interface for inspecting incoming payloads`](http://localhost:4040)
+
+[`Ngrok is All-in-one API gateway, Kubernetes Ingress, DDoS protection, firewall, and global load balancing as a service`](https://ngrok.com/)
+
+:::
+
+## Installation
+
+Ngrok can be installed on ubuntu RocketChat server using apt with the following command:
+
+```bash
+$ sudo apt install ngrok
+```
+
+Alternatively, you can download Ngrok from their website at https://ngrok.com/. Once downloaded and unzipped, place the Ngrok executable in your applications directory.
+
+## Ngrok Configuration
+
+Now that Ngrok is properly installed and RocketChat Server runnig on the http://localhost:3000, we'll need to spin Ngrok up on port 3000 using the following command:
+
+```bash
+$ ngrok http 300
+```
+Once you execute the command listed above, Ngrok will spin up a "forwarding URL" that you can use to login the RocketChat server(http://localhost:3000). 
+Now that your forwarding URL is available and online, copy the HTTPS forwarding URL as we will need it in the next step.
+
+<p align="center">
+![](/img/rocketchat/ngrok-command.png)
+</p>
+
+```bash tittle="forwarding URL"
+Forwarding                    https://d6656c3ef2d4.ngrok.app -> http://localhost:3000     
+```
+
+## Login RocketChat server with forwarding URL
+
+After you login the RocketChat server with forwardnig URL, there is warning occure in the user home page which will change the site URL. RocketChat is very powerfull, when you access the server by different forwarding url, the server will give you advice to change the current forwardnig url as the site URL.
+
+:::info
+
+The setting Site URL is configured to https://212c-34-92-204-228.ngrok-free.app and you are accessing from https://d6656c3ef2d4.ngrok.app!
+
+Do you want to change to https://d6656c3ef2d4.ngrok.app?
+:::
+After change to new forwarding url like https://d6656c3ef2d4.ngrok.app, the RocketChat server will be no response from any request. So please restart the server again.
+
+## Receiving Events
+
+One of the many helpful tools that Ngrok provides is a web interface for inspecting incoming payloads. If you reference your terminal, you'll notice that there is a link for the "Web Interface" that runs on a local port – generally port 4040 if available. Navigate to **http://localhost:4040** and you will see a dashboard for Ngrok.
+
+<p align="center">
+![](/img/rocketchat/ngrok-4040.png)
+</p>
+
+Next, fire off an event such as a message from your chat interface to receive and inspect the payload. Once sent, the webhook will forward the payload to your Ngrok server for inspection via a POST request.
+
