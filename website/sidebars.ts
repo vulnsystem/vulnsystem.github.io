@@ -94,6 +94,7 @@ const sidebars: SidebarsConfig = {
         'docusaurus-createdirectory',
         'docusaurus-addimage',
         'docusaurus-diagrams',
+        'docusaurus-googlecloud',
       ],
     },
   ],
