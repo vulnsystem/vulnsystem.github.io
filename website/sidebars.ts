@@ -14,8 +14,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Generative AI',
       link: {
-        type: 'doc',
-        id: 'generativeAI/generativeAI-oauth',
+        type: 'generated-index',
       },
       collapsed: false,
       items: [
