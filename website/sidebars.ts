@@ -18,6 +18,7 @@ const sidebars: SidebarsConfig = {
       },
       collapsed: false,
       items: [
+        'generativeAI/generativeAI-LLMs',
         'generativeAI/generativeAI-developing',
         'generativeAI/generativeAI-oauth-process',
         'generativeAI/generativeAI-microsoft-oauth',
