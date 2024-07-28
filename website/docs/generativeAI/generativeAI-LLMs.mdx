@@ -1,0 +1,76 @@
+---
+description: Create a rocketchat
+---
+
+# 01 Introduction to Generative AI and LLMs
+
+:::info[Useful links]
+
+[`Generative AI for Beginners: Learn the fundamentals of building Generative AI applications.`](https://microsoft.github.io/generative-ai-for-beginners/)
+
+[`Artificial Intelligence for Beginners: Explore the world of AI with our 12-week.`](https://microsoft.github.io/AI-For-Beginners/)
+
+[`Data Science for Beginners: To offer a 10-week curriculum all about Data Science.`](https://microsoft.github.io/Data-Science-For-Beginners/)
+
+:::
+
+how we came to Generative AI today, which can be seen as a subset of deep learning.
+Deep Learning: a machine learning technique in which layers of neural network are used to process data and make decisions.
+- Deep learning is a subset of machine learning that uses deep neural networks. "Deep" refers to the number of hidden layers in the neural networks. These networks can learn and make intelligent decisions on their own.
+- Deep learning involves more complex neural networks with many layers。
+- Deep learning requires more data and computational power due to the complexity and depth of the neural networks.
+- All deep learning models are neural networks
+
+<p align="center">
+![](/img/generativeAI/generativeAI-history.png)
+</p>
+
+## Neural Network
+A neural network is a computational system inspired by the structure, processing method, and learning ability of the human brain. It consists of interconnected nodes (neurons) that work together to process information, solve problems, and learn from data. Types of Neural Networks:
+
+- Convolutional Neural Networks (CNNs)
+- Convolutional Neural Networks (CNN)
+- Recurrent Neural Networks (RNN)
+- Generative Adversarial Networks (GANs)
+- Long Short-Term Memory Networks (LSTM)
+
+On the figure below, on the left you see a simple neural network. The difference to a deep neural network (on the right) is clearly visible. A deep neural network is simply a neural network with many layers.
+The extra layers provide a huge increase in computational power, which have allowed deep neural networks to reach amazing performance in multiple tasks.
+
+<p align="center">
+![](/img/generativeAI/simple_vs_deep_neural_network.jpg)
+</p>
+
+
+## Deep neural network
+
+- Input Layer: The neural network takes an input, which in this case is likely a set of images. These images are processed into a form that the neural network can understand, usually involving normalization and possibly resizing.
+
+- Hidden Layers: These consist of multiple layers of neurons (the circles in the diagram). Each layer transforms the input data into more abstract and composite representations. For instance:
+
+1. The first hidden layer might detect edges or simple patterns in the image, such as lines and color contrasts.
+
+2. The second hidden layer may identify basic parts of faces like eyes, noses, and mouths.
+
+- Output Layer: This is where the network makes its final decision. In face recognition, the output layer would identify specific faces or characteristics of faces, possibly categorizing them into different classes (e.g., identifying individuals).
+
+<p align="center">
+![](/img/generativeAI/generativeAI-mutliLayers.png)
+</p>
+
+## Transformer and RNN
+After decades of research in the AI field, a new model architecture – called **Transformer** – overcame the limits of Recurrent Neural Networks (RNN), being able to get much longer sequences of text as input. 
+- Transformers generally outperform RNNs in tasks requiring understanding of complex dependencies, such as language modeling and translation.
+- Transformers are more parallelizable and scalable, benefiting from modern computing architectures more effectively than RNNs.
+- Transformers are based on the attention mechanism, enabling the model to give different weights to the inputs it receives, ‘paying more attention’ where the most relevant information is concentrated, regardless of their order in the text sequence.
+
+## LLMs
+Most of the recent generative AI models – also known as **Large Language Models (LLMs)**, since they work with textual inputs and outputs – are indeed based on this **Transformer** architecture. What’s interesting about these models – trained on a huge amount of unlabeled data from diverse sources like books, articles and websites – is that they can be adapted to a wide variety of tasks and generate grammatically correct text with a semblance of creativity. 
+
+## Summary
+
+<p align="center">
+![](/img/generativeAI/generativeAI-relationship2.png)
+</p>
+
+
