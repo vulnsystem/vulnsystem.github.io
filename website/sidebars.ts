@@ -110,6 +110,7 @@ const sidebars: SidebarsConfig = {
         'docusaurus-addimage',
         'docusaurus-diagrams',
         'docusaurus-googlecloud',
+        'docusaurus-ubuntu',
       ],
     },
   ],
