@@ -22,7 +22,7 @@ const sidebars: SidebarsConfig = {
         'metamaskGPT/metamaskGPT-developing',
         'metamaskGPT/metamaskGPT-oauth-process',
         'metamaskGPT/metamaskGPT-microsoft-oauth',
-        'metamaskGPT/metamaskGPT-metamask-oauth',
+        'metamaskGPT/metamaskGPT-oauth',
         'metamaskGPT/metamaskGPT-with-ngrok',
       ],
    },
