@@ -1,0 +1,93 @@
+---
+description: Create a rocketchat
+---
+
+# 01 Introduction to Generative AI and LLMs
+
+:::info[Useful links]
+
+[`Generative AI for Beginners: Learn the fundamentals of building Generative AI applications.`](https://microsoft.github.io/generative-ai-for-beginners/)
+
+[`Artificial Intelligence for Beginners: Explore the world of AI with our 12-week.`](https://microsoft.github.io/AI-For-Beginners/)
+
+[`Data Science for Beginners: To offer a 10-week curriculum all about Data Science.`](https://microsoft.github.io/Data-Science-For-Beginners/)
+
+:::
+
+## Deep Learning
+how we came to Generative AI today, which can be seen as a subset of deep learning.
+**Deep Learning: a machine learning technique in which layers of neural network are used to process data and make decisions.**
+- Deep learning is a subset of machine learning that uses deep neural networks. "Deep" refers to the number of hidden layers in the neural networks. These networks can learn and make intelligent decisions on their own.
+- **Deep learning involves more complex neural networks with many layers.**
+- Deep learning requires more data and computational power due to the complexity and depth of the neural networks.
+- All deep learning models are neural networks
+
+<p align="center">
+![](/img/generativeAI/generativeAI-history.png)
+</p>
+
+## Generative AI
+Generative AI encompasses a broad range of techniques and models that are designed to generate new data instances similar to the training data. It includes methods for creating text, images, music, and other forms of data.
+
+## Large Language Models (LLMs)
+LLMs are a subset of generative AI models focused specifically on natural language processing. They are designed to understand, generate, and manipulate human language. Key characteristics of LLMs include:
+
+- Text Generation: The primary function of LLMs is to generate human-like text based on the input they receive.
+- Understanding Context: LLMs are trained on large corpora of text to understand context, syntax, semantics, and even some aspects of common sense reasoning.
+- Applications in NLP: They are used for various NLP tasks such as language translation, text summarization, question answering, and conversational agents.
+
+## Relationship between Generative AI and LLMs
+Generative AI is a broad field that includes various techniques for generating synthetic data across different modalities. **Large Language Models (LLMs) are a specialized application within generative AI focused on text generation and understanding.** Both leverage similar technologies, such as the Transformer architecture, and are trained on large datasets to produce coherent and contextually appropriate outputs.
+
+- Subset Relationship: LLMs are a specific type of generative AI model. While generative AI can create various types of data (images, audio, etc.), LLMs focus exclusively on generating and understanding text.
+- Shared Techniques: Both generative AI and LLMs use similar underlying techniques, such as neural network architectures (e.g., Transformers), attention mechanisms, and large-scale training on diverse datasets.
+- **Transformers as a Common Foundation**: The Transformer architecture, introduced in the paper "Attention is All You Need," is a foundational model for both LLMs and other generative models. For LLMs, the Transformer architecture allows for effective handling of long-range dependencies and context in text data.
+- Training on Large Datasets: Both generative AI models and LLMs benefit from training on large and diverse datasets. For LLMs, this means vast corpora of text from books, websites, articles, and other sources.
+
+## Transformers as the Foundation for LLMs
+- Architectural Basis: Large Language Models (LLMs) like GPT-3, GPT-4, BERT, and T5 are built upon the Transformer architecture. The Transformer’s ability to handle long-range dependencies and its efficient parallel processing capabilities make it ideal for training on large-scale textual data.
+- Self-Attention Mechanism: The self-attention mechanism in Transformers allows LLMs to understand context over long distances in text. This mechanism is crucial for generating coherent and contextually relevant text, which is a key capability of LLMs.
+- Scalability: Transformers scale well with increased data and computational resources. This scalability has enabled the development of LLMs with billions or even trillions of parameters, allowing them to generate more sophisticated and nuanced text.
+
+## Neural Networks
+Neural networks are a class of machine learning models inspired by the human brain's structure and function. They consist of layers of interconnected nodes (neurons) where each connection has an associated weight. Key types of neural networks include:
+
+- Feedforward Neural Networks (FNNs): The simplest form, where connections do not form cycles.
+- Convolutional Neural Networks (CNNs): Specialized for processing grid-like data such as images.
+- Recurrent Neural Networks (RNNs): Designed for sequential data, maintaining a hidden state to capture temporal dependencies.
+- **Transformer Networks:** A more recent and advanced type of neural network, designed primarily for handling sequential data without relying on recurrence.
+
+## Transformers as Neural Networks
+Transformers are a specific architecture within the broader category of neural networks. They are particularly effective for natural language processing (NLP) and other tasks involving sequential data. 
+**Transformer is a type of neural network. Specifically, it is a deep learning model architecture designed to handle sequential data and is particularly well-suited for tasks involving natural language processing (NLP).**
+
+## Deep neural network
+
+On the figure below, on the left you see a simple neural network. The difference to a deep neural network (on the right) is clearly visible. A deep neural network is simply a neural network with many layers.
+The extra layers provide a huge increase in computational power, which have allowed deep neural networks to reach amazing performance in multiple tasks.
+
+<p align="center">
+![](/img/generativeAI/simple_vs_deep_neural_network.jpg)
+</p>
+
+- Input Layer: The neural network takes an input, which in this case is likely a set of images. These images are processed into a form that the neural network can understand, usually involving normalization and possibly resizing.
+
+- Hidden Layers: These consist of multiple layers of neurons (the circles in the diagram). Each layer transforms the input data into more abstract and composite representations. For instance:
+
+1. The first hidden layer might detect edges or simple patterns in the image, such as lines and color contrasts.
+
+2. The second hidden layer may identify basic parts of faces like eyes, noses, and mouths.
+
+- Output Layer: This is where the network makes its final decision. In face recognition, the output layer would identify specific faces or characteristics of faces, possibly categorizing them into different classes (e.g., identifying individuals).
+
+<p align="center">
+![](/img/generativeAI/generativeAI-mutliLayers.png)
+</p>
+
+## Summary
+
+<p align="center">
+![](/img/generativeAI/LLMs-in-AI.jpg)
+</p>
+
+

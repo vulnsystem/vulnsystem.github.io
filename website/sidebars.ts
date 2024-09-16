@@ -12,18 +12,28 @@ const sidebars: SidebarsConfig = {
     'introduction',
     {
       type: 'category',
-      label: 'Generative AI',
+      label: 'MetaMask GPT',
       link: {
         type: 'generated-index',
       },
       collapsed: false,
       items: [
-        'generativeAI/generativeAI-LLMs',
-        'generativeAI/generativeAI-developing',
-        'generativeAI/generativeAI-oauth-process',
-        'generativeAI/generativeAI-microsoft-oauth',
-        'generativeAI/generativeAI-metamask-oauth',
-        'generativeAI/generativeAI-with-ngrok',
+        'metamaskGPT/metamaskGPT-LLMs',
+        'metamaskGPT/metamaskGPT-developing',
+        'metamaskGPT/metamaskGPT-oauth-process',
+        'metamaskGPT/metamaskGPT-microsoft-oauth',
+        'metamaskGPT/metamaskGPT-metamask-oauth',
+        'metamaskGPT/metamaskGPT-with-ngrok',
+      ],
+   },
+   {
+      type: 'category',
+      label: 'ChatGPT',
+      link: {
+        type: 'generated-index',
+      },
+      items: [
+        'chatGPT/chatGPT-LLMs',
       ],
    },
     {
@@ -92,14 +102,6 @@ const sidebars: SidebarsConfig = {
       ],
    },
    {
-      type: 'category',
-      label: 'Kaleidoscope',
-      link: {type: 'doc', id: 'kaleidoscope/kaleidoscope'},
-      items: [
-        'kaleidoscope/kaleidoscope-chatgpt',
-      ],
-    },
-    {
       type: 'category',
       label: 'Docusaurus',
       link: {type: 'doc', id: 'docusaurus-quickstart'},
